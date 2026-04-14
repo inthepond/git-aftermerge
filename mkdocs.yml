@@ -1,0 +1,38 @@
+site_name: git-aftermerge
+site_description: Track the downstream fate of every commit. Post-merge feedback for AI coding agents.
+repo_url: https://github.com/inthepond/git-aftermerge
+repo_name: git-aftermerge
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Quick Start: quickstart.md
+  - CLI Reference: cli-reference.md
+  - MCP Setup: mcp-setup.md
+  - How It Works: how-it-works.md
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - admonition
+  - toc:
+      permalink: true

@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" width="900" height="500">
+<defs>
+  <style>
+    text { font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+
+    @keyframes scan {
+      0%,4%  { transform: translateX(0);     opacity: 0; }
+      7%     { transform: translateX(0);     opacity: 1; }
+      73%    { transform: translateX(272px); opacity: 1; }
+      79%    { transform: translateX(272px); opacity: 0; }
+      100%   { transform: translateX(0);     opacity: 0; }
+    }
+    .scan-line { animation: scan 10s ease-in-out infinite; }
+  </style>
+
+  <!-- Reverted diagonal stripe pattern -->
+  <pattern id="rev" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="6" height="6" fill="#141414"/>
+    <rect width="2.5" height="6" fill="#252525"/>
+  </pattern>
+
+  <!-- Arrow -->
+  <marker id="aw" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+    <path d="M0,0.5 L0,5.5 L5.5,3z" fill="#707070"/>
+  </marker>
+
+  <!-- Clip: keep bars inside timeline x-range -->
+  <clipPath id="tc">
+    <rect x="300" y="130" width="274" height="250"/>
+  </clipPath>
+
+  <!-- Glow for scan dot -->
+  <filter id="g" x="-80%" y="-80%" width="260%" height="260%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+
+
+<!-- ═══ BACKGROUND ═══ -->
+<rect width="900" height="500" rx="10" fill="#080808"/>
+<rect width="900" height="500" rx="10" fill="none" stroke="#1c1c1c" stroke-width="1.5"/>
+
+<!-- Header strip -->
+<rect x="1" y="1" width="898" height="51" rx="9" fill="#0d0d0d"/>
+<line x1="0" y1="52" x2="900" y2="52" stroke="#1c1c1c" stroke-width="1"/>
+
+<!-- Footer strip -->
+<line x1="0" y1="442" x2="900" y2="442" stroke="#1c1c1c" stroke-width="1"/>
+<rect x="1" y="442" width="898" height="57" rx="0" fill="#0d0d0d"/>
+
+<!-- Panel dividers -->
+<line x1="272" y1="52" x2="272" y2="442" stroke="#161616" stroke-width="1"/>
+<line x1="592" y1="52" x2="592" y2="442" stroke="#161616" stroke-width="1"/>
+
+
+<!-- ════════════════════════════════════════
+     HEADER
+     ════════════════════════════════════════ -->
+<text x="450" y="29" text-anchor="middle" fill="#e8e8e8" font-size="16" font-weight="700" letter-spacing="0.5">git-aftermerge</text>
+<text x="450" y="44" text-anchor="middle" fill="#686868" font-size="10">Track the downstream fate of every commit · Post-merge feedback for AI agents</text>
+
+
+<!-- ════════════════════════════════════════
+     PANEL 1 — COMMIT  (x: 0 → 272)
+     ════════════════════════════════════════ -->
+
+<text x="136" y="72" text-anchor="middle" fill="#686868" font-size="9" font-weight="600" letter-spacing="2">① COMMIT MERGED</text>
+
+<!-- Commit card -->
+<rect x="18" y="82" width="238" height="274" rx="6" fill="#0f0f0f" stroke="#1e1e1e" stroke-width="1"/>
+
+<text x="32" y="108" fill="#707070" font-size="9.5">commit</text>
+<text x="96" y="108" fill="#d8d8d8" font-size="9.5" font-weight="600">a3f7d12</text>
+
+<text x="32" y="128" fill="#707070" font-size="9.5">author</text>
+<rect x="96" y="117" width="80" height="15" rx="3" fill="#191919" stroke="#252525" stroke-width="0.8"/>
+<text x="136" y="128" text-anchor="middle" fill="#c0c0c0" font-size="9.5">claude-code</text>
+
+<text x="32" y="148" fill="#707070" font-size="9.5">type</text>
+<rect x="96" y="137" width="32" height="15" rx="3" fill="#191919" stroke="#252525" stroke-width="0.8"/>
+<text x="112" y="148" text-anchor="middle" fill="#c0c0c0" font-size="9.5">feat</text>
+
+<text x="32" y="168" fill="#707070" font-size="9.5">message</text>
+<text x="32" y="185" fill="#a0a0a0" font-size="9" font-style="italic">add JWT refresh token</text>
+<text x="32" y="199" fill="#a0a0a0" font-size="9" font-style="italic">rotation</text>
+
+<line x1="32" y1="214" x2="242" y2="214" stroke="#1a1a1a" stroke-width="1"/>
+
+<text x="32" y="233" fill="#707070" font-size="9">lines changed</text>
+<rect x="140" y="221" width="44" height="18" rx="3" fill="#191919" stroke="#252525"/>
+<text x="162" y="233" text-anchor="middle" fill="#e0e0e0" font-size="10" font-weight="600">+142</text>
+<rect x="190" y="221" width="36" height="18" rx="3" fill="#191919" stroke="#252525"/>
+<text x="208" y="233" text-anchor="middle" fill="#909090" font-size="10">−38</text>
+
+<line x1="32" y1="250" x2="242" y2="250" stroke="#1a1a1a" stroke-width="1"/>
+
+<text x="32" y="269" fill="#707070" font-size="9">merged</text>
+<text x="96" y="269" fill="#909090" font-size="9">2026-03-15</text>
+
+<text x="32" y="288" fill="#707070" font-size="9">branch</text>
+<text x="96" y="288" fill="#909090" font-size="9">feat/jwt-rotation</text>
+
+<line x1="32" y1="304" x2="242" y2="304" stroke="#1a1a1a" stroke-width="1"/>
+
+<text x="32" y="320" fill="#707070" font-size="9">files changed</text>
+<text x="242" y="320" text-anchor="end" fill="#909090" font-size="9">src/auth.py</text>
+<text x="242" y="334" text-anchor="end" fill="#909090" font-size="9">src/token.py</text>
+
+
+<!-- ════════════════════════════════════════
+     PANEL 2 — SURVIVAL OVER TIME  (x: 272 → 592)
+     ════════════════════════════════════════ -->
+
+<text x="432" y="72" text-anchor="middle" fill="#686868" font-size="9" font-weight="600" letter-spacing="2">② SURVIVAL TRACKED OVER TIME</text>
+
+<!-- Time ruler: x=300 (Day 0) → x=572 (Day 29) -->
+<line x1="300" y1="107" x2="572" y2="107" stroke="#252525" stroke-width="1.5"/>
+
+<!-- Ticks -->
+<line x1="300" y1="101" x2="300" y2="113" stroke="#252525" stroke-width="1.5"/>
+<line x1="368" y1="101" x2="368" y2="113" stroke="#252525" stroke-width="1.5"/>
+<line x1="436" y1="101" x2="436" y2="113" stroke="#252525" stroke-width="1.5"/>
+<line x1="504" y1="101" x2="504" y2="113" stroke="#252525" stroke-width="1.5"/>
+<line x1="572" y1="101" x2="572" y2="113" stroke="#252525" stroke-width="1.5"/>
+
+<!-- Day labels — below ruler -->
+<text x="300" y="126" text-anchor="middle" fill="#727272" font-size="8.5">Day 0</text>
+<text x="368" y="126" text-anchor="middle" fill="#727272" font-size="8.5">Day 7</text>
+<text x="436" y="126" text-anchor="middle" fill="#727272" font-size="8.5">Day 14</text>
+<text x="504" y="126" text-anchor="middle" fill="#727272" font-size="8.5">Day 21</text>
+<text x="572" y="126" text-anchor="middle" fill="#727272" font-size="8.5">Day 29</text>
+
+<!-- Event labels — above ruler -->
+<text x="368" y="96" text-anchor="middle" fill="#909090" font-size="8">refactor</text>
+<text x="436" y="96" text-anchor="middle" fill="#909090" font-size="8">fix: race</text>
+
+<!-- Event dots on ruler (SMIL) -->
+<circle cx="368" cy="107" r="0" fill="#888888">
+  <animate attributeName="r" values="0;0;3.5;3.5" keyTimes="0;0.35;0.43;1" dur="10s" repeatCount="indefinite"/>
+</circle>
+<circle cx="436" cy="107" r="0" fill="#888888">
+  <animate attributeName="r" values="0;0;3.5;3.5" keyTimes="0;0.46;0.54;1" dur="10s" repeatCount="indefinite"/>
+</circle>
+
+<!-- Scan line -->
+<g class="scan-line">
+  <line x1="300" y1="101" x2="300" y2="405" stroke="#888888" stroke-width="1"
+        stroke-dasharray="5,4" opacity="0.45"/>
+  <circle cx="300" cy="107" r="4" fill="#aaaaaa" filter="url(#g)"/>
+</g>
+
+
+<!-- ── src/auth.py ── label ABOVE bar -->
+<text x="300" y="148" fill="#888888" font-size="9">src/auth.py</text>
+<!-- Track -->
+<rect x="300" y="153" width="272" height="24" rx="3" fill="#111111"/>
+<!-- Survived: x=300→470 (170px) -->
+<rect x="300" y="153" height="24" rx="3" fill="#cccccc" clip-path="url(#tc)">
+  <animate attributeName="width" values="0;0;170;170" keyTimes="0;0.08;0.50;1"
+           dur="10s" calcMode="linear" repeatCount="indefinite"/>
+</rect>
+<!-- Modified: x=470→572 (102px) -->
+<rect x="470" y="153" height="24" rx="3" fill="#444444" clip-path="url(#tc)">
+  <animate attributeName="width" values="0;0;0;102;102" keyTimes="0;0.08;0.28;0.50;1"
+           dur="10s" calcMode="linear" repeatCount="indefinite"/>
+</rect>
+
+
+<!-- ── src/token.py ── label ABOVE bar -->
+<text x="300" y="203" fill="#888888" font-size="9">src/token.py</text>
+<!-- Track -->
+<rect x="300" y="208" width="272" height="24" rx="3" fill="#111111"/>
+<!-- Survived: x=300→368 (68px) -->
+<rect x="300" y="208" height="24" rx="3" fill="#cccccc" clip-path="url(#tc)">
+  <animate attributeName="width" values="0;0;68;68" keyTimes="0;0.12;0.50;1"
+           dur="10s" calcMode="linear" repeatCount="indefinite"/>
+</rect>
+<!-- Reverted: x=368→572 (204px) -->
+<rect x="368" y="208" height="24" rx="3" fill="url(#rev)" stroke="#2a2a2a" stroke-width="0.8"
+      clip-path="url(#tc)">
+  <animate attributeName="width" values="0;0;0;204;204" keyTimes="0;0.12;0.32;0.50;1"
+           dur="10s" calcMode="linear" repeatCount="indefinite"/>
+</rect>
+
+<!-- REVERTED badge — below token bar, own row -->
+<rect x="404" y="241" width="62" height="15" rx="3" fill="#0e0e0e" stroke="#282828" stroke-width="0.8">
+  <animate attributeName="opacity" values="0;0;0;1;1" keyTimes="0;0.50;0.50;0.57;1"
+           dur="10s" repeatCount="indefinite"/>
+</rect>
+<text x="435" y="252" text-anchor="middle" fill="#686868" font-size="7.5" font-weight="600" letter-spacing="0.5">
+  REVERTED
+  <animate attributeName="opacity" values="0;0;0;1;1" keyTimes="0;0.50;0.50;0.57;1"
+           dur="10s" repeatCount="indefinite"/>
+</text>
+
+
+<!-- ── src/utils.py ── label ABOVE bar -->
+<text x="300" y="278" fill="#888888" font-size="9">src/utils.py</text>
+<!-- Track -->
+<rect x="300" y="283" width="272" height="24" rx="3" fill="#111111"/>
+<!-- Fully survived: 272px -->
+<rect x="300" y="283" height="24" rx="3" fill="#cccccc" clip-path="url(#tc)">
+  <animate attributeName="width" values="0;0;272;272" keyTimes="0;0.16;0.50;1"
+           dur="10s" calcMode="linear" repeatCount="indefinite"/>
+</rect>
+
+
+<!-- ── Legend ── -->
+<rect x="300" y="325" width="14" height="10" rx="2" fill="#cccccc"/>
+<text x="318" y="334" fill="#888888" font-size="9">survived</text>
+<rect x="370" y="325" width="14" height="10" rx="2" fill="#444444"/>
+<text x="388" y="334" fill="#888888" font-size="9">modified</text>
+<rect x="440" y="325" width="14" height="10" rx="2" fill="url(#rev)" stroke="#2a2a2a" stroke-width="0.8"/>
+<text x="458" y="334" fill="#888888" font-size="9">reverted</text>
+
+
+<!-- ── git blame hint ── -->
+<rect x="300" y="348" width="272" height="72" rx="4" fill="#0d0d0d" stroke="#1c1c1c" stroke-width="0.8"/>
+<text x="312" y="366" fill="#686868" font-size="8.5">$ git blame src/auth.py</text>
+<line x1="312" y1="373" x2="560" y2="373" stroke="#181818" stroke-width="0.8"/>
+<text x="312" y="388" fill="#b0b0b0" font-size="8.5">a3f7d12</text>
+<text x="354" y="388" fill="#888888" font-size="8.5">(claude-code)  still owned  ✓</text>
+<text x="312" y="406" fill="#686868" font-size="8.5">b8e2c41</text>
+<text x="354" y="406" fill="#686868" font-size="8.5">(human)        refactored</text>
+
+
+<!-- ════════════════════════════════════════
+     PANEL 3 — FATE REPORT  (x: 592 → 900)
+     ════════════════════════════════════════ -->
+
+<text x="746" y="72" text-anchor="middle" fill="#686868" font-size="9" font-weight="600" letter-spacing="2">③ FATE REPORT</text>
+
+<!-- Card -->
+<rect x="610" y="82" width="272" height="345" rx="6" fill="#0f0f0f" stroke="#1e1e1e" stroke-width="1"/>
+
+<!-- Score ring bg: r=60, circumference=376.99 -->
+<circle cx="746" cy="160" r="60" fill="none" stroke="#181818" stroke-width="11"/>
+
+<!-- Score arc: 73/100 → arc=275, gap=102, offset=94 from top -->
+<circle cx="746" cy="160" r="60" fill="none" stroke="#d0d0d0" stroke-width="11"
+        stroke-dashoffset="94" stroke-linecap="round">
+  <animate attributeName="stroke-dasharray"
+           values="0 377;0 377;275 102;275 102"
+           keyTimes="0;0.55;0.85;1"
+           dur="10s" calcMode="spline" keySplines="0 0 1 1;0.2 0 0.4 1;0 0 1 1"
+           repeatCount="indefinite"/>
+</circle>
+
+<!-- Score number — fades in after ring -->
+<g>
+  <animate attributeName="opacity" values="0;0;0;1;1"
+           keyTimes="0;0.55;0.62;0.72;1" dur="10s" repeatCount="indefinite"/>
+  <text x="746" y="153" text-anchor="middle" fill="#f0f0f0" font-size="36" font-weight="700">73</text>
+  <text x="746" y="170" text-anchor="middle" fill="#686868" font-size="12">/100</text>
+  <text x="746" y="187" text-anchor="middle" fill="#808080" font-size="9.5" font-weight="600" letter-spacing="1">MODIFIED</text>
+</g>
+
+<!-- Divider — 18px below ring bottom (160+60=220, divider at 238) -->
+<line x1="624" y1="238" x2="868" y2="238" stroke="#1a1a1a" stroke-width="1"/>
+
+<!-- Stats rows — 20px spacing from y=257 -->
+<text x="628" y="257" fill="#707070" font-size="9.5">surviving lines</text>
+<text x="866" y="257" text-anchor="end" fill="#d0d0d0" font-size="9.5" font-weight="600">104 / 142</text>
+
+<text x="628" y="277" fill="#707070" font-size="9.5">downstream events</text>
+<text x="866" y="277" text-anchor="end" fill="#b0b0b0" font-size="9.5" font-weight="600">3</text>
+
+<text x="628" y="297" fill="#707070" font-size="9.5">bug fixes linked</text>
+<text x="866" y="297" text-anchor="end" fill="#888888" font-size="9.5" font-weight="600">1</text>
+
+<text x="628" y="317" fill="#707070" font-size="9.5">ai attributed</text>
+<text x="866" y="317" text-anchor="end" fill="#b0b0b0" font-size="9.5" font-weight="600">claude-code</text>
+
+<text x="628" y="337" fill="#707070" font-size="9.5">days since merge</text>
+<text x="866" y="337" text-anchor="end" fill="#888888" font-size="9.5" font-weight="600">29</text>
+
+<line x1="624" y1="352" x2="868" y2="352" stroke="#1a1a1a" stroke-width="1"/>
+
+<!-- Insight -->
+<text x="628" y="370" fill="#909090" font-size="8.5">⚠  auth/ has 34% lower survival rate</text>
+<text x="628" y="386" fill="#707070" font-size="8.5">    than repo average — review before</text>
+<text x="628" y="402" fill="#707070" font-size="8.5">    committing to this path</text>
+
+
+<!-- ════════════════════════════════════════
+     FOOTER STATS
+     ════════════════════════════════════════ -->
+
+<text x="75"  y="470" text-anchor="middle" fill="#d8d8d8" font-size="18" font-weight="700">89%</text>
+<text x="75"  y="488" text-anchor="middle" fill="#727272" font-size="9">overall survival</text>
+<line x1="150" y1="447" x2="150" y2="497" stroke="#181818" stroke-width="1"/>
+
+<text x="225" y="470" text-anchor="middle" fill="#b8b8b8" font-size="18" font-weight="700">247</text>
+<text x="225" y="488" text-anchor="middle" fill="#727272" font-size="9">commits tracked</text>
+<line x1="300" y1="447" x2="300" y2="497" stroke="#181818" stroke-width="1"/>
+
+<text x="375" y="470" text-anchor="middle" fill="#989898" font-size="18" font-weight="700">3</text>
+<text x="375" y="488" text-anchor="middle" fill="#727272" font-size="9">reverts detected</text>
+<line x1="450" y1="447" x2="450" y2="497" stroke="#181818" stroke-width="1"/>
+
+<text x="525" y="470" text-anchor="middle" fill="#787878" font-size="18" font-weight="700">12</text>
+<text x="525" y="488" text-anchor="middle" fill="#727272" font-size="9">bug-fix correlated</text>
+<line x1="600" y1="447" x2="600" y2="497" stroke="#181818" stroke-width="1"/>
+
+<text x="675" y="470" text-anchor="middle" fill="#b8b8b8" font-size="18" font-weight="700">5</text>
+<text x="675" y="488" text-anchor="middle" fill="#727272" font-size="9">MCP tools</text>
+<line x1="750" y1="447" x2="750" y2="497" stroke="#181818" stroke-width="1"/>
+
+<text x="825" y="470" text-anchor="middle" fill="#d8d8d8" font-size="18" font-weight="700">0</text>
+<text x="825" y="488" text-anchor="middle" fill="#727272" font-size="9">LLM required</text>
+
+</svg>
