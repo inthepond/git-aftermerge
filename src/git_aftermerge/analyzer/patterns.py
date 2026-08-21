@@ -1,6 +1,5 @@
 """Pattern aggregation engine."""
 
-import re
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -13,10 +12,6 @@ from git_aftermerge.storage.models import (
     PatternEntry,
     PatternReport,
     RiskyArea,
-)
-
-CONVENTIONAL_TYPE = re.compile(
-    r"^(feat|fix|refactor|test|docs|chore|style|perf|ci|build|revert)(\(.+\))?!?:"
 )
 
 EXTENSION_MAP = {
@@ -34,11 +29,6 @@ def _path_key(file_paths: list[str]) -> str:
         return "root"
     parts = file_paths[0].split("/")
     return "/".join(parts[:2]) + "/" if len(parts) > 2 else parts[0] + "/"
-
-
-def _commit_type(message: str) -> str:
-    m = CONVENTIONAL_TYPE.match(message)
-    return m.group(1) if m else "unknown"
 
 
 def _size_bucket(lines_added: int) -> str:
@@ -91,29 +81,16 @@ class PatternAggregator:
         groups: dict[tuple[str, str], list[CommitFate]] = defaultdict(list)
         for fate in fates:
             groups[("by_path", _path_key(fate.file_paths))].append(fate)
-            ctype = _commit_type(fate.commit_sha)
-            groups[("by_type", ctype)].append(fate)
+            groups[("by_type", fate.commit_type or "unknown")].append(fate)
             groups[("by_author", fate.author.split("@")[0])].append(fate)
             groups[("by_size", _size_bucket(fate.original_lines_added))].append(fate)
             groups[("by_language", _language(fate.file_paths))].append(fate)
-
-        # Patch: use commit_type if available
-        groups2: dict[tuple[str, str], list[CommitFate]] = defaultdict(list)
-        for fate in fates:
-            ct = fate.commit_type or "unknown"
-            groups2[("by_type", ct)].append(fate)
-        for fate in fates:
-            groups2[("by_path", _path_key(fate.file_paths))].append(fate)
-            groups2[("by_author", fate.author.split("@")[0])].append(fate)
-            groups2[("by_size", _size_bucket(fate.original_lines_added))].append(fate)
-            groups2[("by_language", _language(fate.file_paths))].append(fate)
+            groups[("by_cohort", fate.cohort)].append(fate)
+            if fate.maturity:
+                groups[("by_maturity", fate.maturity)].append(fate)
 
         entries = []
-        seen = set()
-        for (dimension, key), group_fates in groups2.items():
-            if (dimension, key) in seen:
-                continue
-            seen.add((dimension, key))
+        for (dimension, key), group_fates in groups.items():
             avg_score = sum(f.survival_score for f in group_fates) / len(group_fates)
             revert_count = sum(
                 1 for f in group_fates if f.fate == Fate.REVERTED

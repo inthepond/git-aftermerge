@@ -1,20 +1,41 @@
-"""SQLite database manager for git-aftermerge."""
+"""SQLite database manager for git-aftermerge.
 
-import json
+Persists facts only (see schema.sql). The read methods assemble derived
+views — ``CommitFate`` with its score and fate label, survival-curve rows —
+from those facts at query time, so scoring rules can change without a rescan.
+"""
+
 import sqlite3
+from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
 from git_aftermerge.storage.models import (
+    CHECKPOINT_DAYS,
+    HEAD_LABEL,
+    Cohort,
+    CommitFact,
     CommitFate,
     DownstreamEvent,
     EventType,
     Fate,
-    PatternEntry,
+    FileChange,
+    MaturityTier,
+    SurvivalObservation,
+    checkpoint_label,
+    maturity_of,
 )
 
 SCHEMA_PATH = Path(__file__).parent / "schema.sql"
+SCHEMA_VERSION = 2
+
+# Tables from any schema version, used when rebuilding an outdated database.
+_ALL_TABLES = (
+    "commit_fates", "downstream_events", "patterns",  # v1
+    "commits", "commit_files", "commit_links", "survival_observations",  # v2
+    "scan_meta",
+)
 
 
 class Database:
@@ -47,6 +68,12 @@ class Database:
         return self._conn
 
     def initialize_schema(self) -> None:
+        version = self.conn.execute("PRAGMA user_version").fetchone()[0]
+        if version != SCHEMA_VERSION:
+            # Facts are fully rebuildable from git history, so an outdated
+            # database is dropped and repopulated by the next full scan.
+            for table in _ALL_TABLES:
+                self.conn.execute(f"DROP TABLE IF EXISTS {table}")
         schema = SCHEMA_PATH.read_text()
         self.conn.executescript(schema)
         self.conn.commit()
@@ -78,152 +105,101 @@ class Database:
             )
         self.conn.commit()
 
-    # --- commit_fates ---
+    # --- commit facts ---
 
-    def upsert_commit_fate(self, fate: CommitFate) -> None:
-        now = datetime.utcnow().isoformat()
+    def upsert_commit_fact(self, fact: CommitFact) -> None:
         self.conn.execute(
-            """INSERT INTO commit_fates
-               (commit_sha, author, author_tool, author_model, merged_at,
-                original_lines_added, original_lines_modified, surviving_lines,
-                survival_score, fate, commit_type, ai_attributed, file_paths_json,
-                created_at, updated_at)
-               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            """INSERT INTO commits
+               (commit_sha, author_name, author_email, authored_at, message_subject,
+                cohort, author_tool, author_model, ai_session, human_ratio,
+                attribution_source, lines_added, lines_deleted, recorded_at)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                ON CONFLICT(commit_sha) DO UPDATE SET
-                 author=excluded.author,
+                 author_name=excluded.author_name,
+                 author_email=excluded.author_email,
+                 authored_at=excluded.authored_at,
+                 message_subject=excluded.message_subject,
+                 cohort=excluded.cohort,
                  author_tool=excluded.author_tool,
                  author_model=excluded.author_model,
-                 merged_at=excluded.merged_at,
-                 original_lines_added=excluded.original_lines_added,
-                 original_lines_modified=excluded.original_lines_modified,
-                 surviving_lines=excluded.surviving_lines,
-                 survival_score=excluded.survival_score,
-                 fate=excluded.fate,
-                 commit_type=excluded.commit_type,
-                 ai_attributed=excluded.ai_attributed,
-                 file_paths_json=excluded.file_paths_json,
-                 updated_at=excluded.updated_at
+                 ai_session=excluded.ai_session,
+                 human_ratio=excluded.human_ratio,
+                 attribution_source=excluded.attribution_source,
+                 lines_added=excluded.lines_added,
+                 lines_deleted=excluded.lines_deleted,
+                 recorded_at=excluded.recorded_at
             """,
             (
-                fate.commit_sha,
-                fate.author,
-                fate.author_tool,
-                fate.author_model,
-                fate.merged_at.isoformat(),
-                fate.original_lines_added,
-                fate.original_lines_modified,
-                fate.surviving_lines,
-                fate.survival_score,
-                fate.fate.value,
-                fate.commit_type,
-                int(fate.ai_attributed),
-                json.dumps(fate.file_paths),
-                now,
-                now,
+                fact.sha,
+                fact.author_name,
+                fact.author_email,
+                fact.authored_at.isoformat(),
+                fact.subject,
+                fact.cohort,
+                fact.author_tool,
+                fact.author_model,
+                fact.ai_session,
+                fact.human_ratio,
+                fact.attribution_source,
+                fact.lines_added,
+                fact.lines_deleted,
+                datetime.utcnow().isoformat(),
             ),
         )
+        self.conn.execute("DELETE FROM commit_files WHERE commit_sha=?", (fact.sha,))
+        for f in fact.files:
+            self.conn.execute(
+                "INSERT INTO commit_files"
+                " (commit_sha, path, lines_added, lines_deleted, prev_touch_at)"
+                " VALUES (?,?,?,?,?)",
+                (
+                    fact.sha,
+                    f.path,
+                    f.lines_added,
+                    f.lines_deleted,
+                    f.prev_touch_at.isoformat() if f.prev_touch_at else None,
+                ),
+            )
 
-    def get_commit_fate(self, commit_sha: str) -> Optional[CommitFate]:
+    def commit_exists(self, sha: str) -> bool:
         row = self.conn.execute(
-            "SELECT * FROM commit_fates WHERE commit_sha=?", (commit_sha,)
+            "SELECT 1 FROM commits WHERE commit_sha=?", (sha,)
         ).fetchone()
-        if not row:
-            return None
-        fate = self._row_to_commit_fate(row)
-        fate.downstream_events = self.get_downstream_events(commit_sha)
-        return fate
+        return row is not None
 
-    def get_all_commit_fates(
-        self,
-        since: Optional[datetime] = None,
-        path_filter: Optional[str] = None,
-        author_filter: Optional[str] = None,
-        limit: Optional[int] = None,
-        offset: int = 0,
-    ) -> list[CommitFate]:
-        query = "SELECT * FROM commit_fates WHERE 1=1"
-        params: list = []
-        if since:
-            query += " AND merged_at >= ?"
-            params.append(since.isoformat())
-        if author_filter:
-            query += " AND author LIKE ?"
-            params.append(f"%{author_filter}%")
-        query += " ORDER BY merged_at DESC"
-        if limit is not None:
-            query += " LIMIT ? OFFSET ?"
-            params.extend([limit, offset])
-        rows = self.conn.execute(query, params).fetchall()
-        if not rows:
-            return []
-
-        # Batch-fetch all downstream events in one query
-        shas = [row["commit_sha"] for row in rows]
-        events_map = self._get_batch_downstream_events(shas)
-
-        fates = []
+    def get_commit_facts(self) -> list[CommitFact]:
+        rows = self.conn.execute("SELECT * FROM commits ORDER BY authored_at").fetchall()
+        files_map: dict[str, list[FileChange]] = defaultdict(list)
+        for r in self.conn.execute("SELECT * FROM commit_files").fetchall():
+            files_map[r["commit_sha"]].append(_row_to_file_change(r))
+        facts = []
         for row in rows:
-            fate = self._row_to_commit_fate(row)
-            fate.downstream_events = events_map.get(fate.commit_sha, [])
-            if path_filter:
-                if not any(p.startswith(path_filter) for p in fate.file_paths):
-                    continue
-            fates.append(fate)
-        return fates
+            facts.append(CommitFact(
+                sha=row["commit_sha"],
+                author_name=row["author_name"],
+                author_email=row["author_email"],
+                authored_at=datetime.fromisoformat(row["authored_at"]),
+                subject=row["message_subject"],
+                cohort=row["cohort"],
+                author_tool=row["author_tool"],
+                author_model=row["author_model"],
+                ai_session=row["ai_session"],
+                human_ratio=row["human_ratio"],
+                attribution_source=row["attribution_source"],
+                lines_added=row["lines_added"],
+                lines_deleted=row["lines_deleted"],
+                files=files_map.get(row["commit_sha"], []),
+            ))
+        return facts
 
-    def _get_batch_downstream_events(self, shas: list[str]) -> dict[str, list[DownstreamEvent]]:
-        """Fetch downstream events for multiple commits in one query."""
-        if not shas:
-            return {}
-        events_map: dict[str, list[DownstreamEvent]] = {}
-        # Chunk to stay under SQLite's 999 variable limit
-        for i in range(0, len(shas), 900):
-            chunk = shas[i : i + 900]
-            placeholders = ",".join("?" for _ in chunk)
-            rows = self.conn.execute(
-                f"SELECT * FROM downstream_events WHERE source_commit_sha IN ({placeholders}) "
-                "ORDER BY event_date",
-                chunk,
-            ).fetchall()
-            for r in rows:
-                event = DownstreamEvent(
-                    event_type=EventType(r["event_type"]),
-                    commit_sha=r["event_commit_sha"],
-                    date=datetime.fromisoformat(r["event_date"]),
-                    lines_affected=r["lines_affected"],
-                    commit_message=r["commit_message"] or "",
-                    author=r["author"] or "",
-                )
-                events_map.setdefault(r["source_commit_sha"], []).append(event)
-        return events_map
+    # --- links (facts about detected relationships) ---
 
-    def _row_to_commit_fate(self, row: sqlite3.Row) -> CommitFate:
-        file_paths = json.loads(row["file_paths_json"]) if row["file_paths_json"] else []
-        return CommitFate(
-            commit_sha=row["commit_sha"],
-            author=row["author"],
-            author_tool=row["author_tool"],
-            author_model=row["author_model"],
-            merged_at=datetime.fromisoformat(row["merged_at"]),
-            original_lines_added=row["original_lines_added"],
-            original_lines_modified=row["original_lines_modified"],
-            surviving_lines=row["surviving_lines"],
-            survival_score=row["survival_score"],
-            fate=Fate(row["fate"]),
-            days_since_merge=(datetime.utcnow() - datetime.fromisoformat(row["merged_at"])).days,
-            file_paths=file_paths,
-            commit_type=row["commit_type"],
-            ai_attributed=bool(row["ai_attributed"]),
-        )
-
-    # --- downstream_events ---
-
-    def insert_downstream_event(self, source_sha: str, event: DownstreamEvent) -> None:
+    def insert_link(self, source_sha: str, event: DownstreamEvent, detector: str = "v1") -> None:
         self.conn.execute(
-            """INSERT OR IGNORE INTO downstream_events
-               (source_commit_sha, event_type, event_commit_sha, event_date,
-                lines_affected, commit_message, author)
-               VALUES (?,?,?,?,?,?,?)
+            """INSERT OR IGNORE INTO commit_links
+               (source_commit_sha, link_type, event_commit_sha, event_date,
+                lines_affected, commit_message, author, detector)
+               VALUES (?,?,?,?,?,?,?,?)
             """,
             (
                 source_sha,
@@ -233,81 +209,284 @@ class Database:
                 event.lines_affected,
                 event.commit_message,
                 event.author,
+                detector,
             ),
         )
 
-    def get_downstream_events(self, source_sha: str) -> list[DownstreamEvent]:
+    def delete_links(self, source_sha: str) -> None:
+        self.conn.execute(
+            "DELETE FROM commit_links WHERE source_commit_sha=?", (source_sha,)
+        )
+
+    def get_links(self, source_sha: str) -> list[DownstreamEvent]:
         rows = self.conn.execute(
-            "SELECT * FROM downstream_events WHERE source_commit_sha=? ORDER BY event_date",
+            "SELECT * FROM commit_links WHERE source_commit_sha=? ORDER BY event_date",
             (source_sha,),
         ).fetchall()
-        return [
-            DownstreamEvent(
-                event_type=EventType(r["event_type"]),
-                commit_sha=r["event_commit_sha"],
-                date=datetime.fromisoformat(r["event_date"]),
-                lines_affected=r["lines_affected"],
-                commit_message=r["commit_message"] or "",
-                author=r["author"] or "",
-            )
-            for r in rows
-        ]
+        return [_row_to_event(r) for r in rows]
 
-    def delete_downstream_events(self, source_sha: str) -> None:
+    # Backward-compatible aliases (v1 naming).
+    insert_downstream_event = insert_link
+    delete_downstream_events = delete_links
+    get_downstream_events = get_links
+
+    def _get_batch_links(self, shas: list[str]) -> dict[str, list[DownstreamEvent]]:
+        if not shas:
+            return {}
+        events_map: dict[str, list[DownstreamEvent]] = {}
+        # Chunk to stay under SQLite's 999 variable limit
+        for i in range(0, len(shas), 900):
+            chunk = shas[i : i + 900]
+            placeholders = ",".join("?" for _ in chunk)
+            rows = self.conn.execute(
+                f"SELECT * FROM commit_links WHERE source_commit_sha IN ({placeholders}) "
+                "ORDER BY event_date",
+                chunk,
+            ).fetchall()
+            for r in rows:
+                events_map.setdefault(r["source_commit_sha"], []).append(_row_to_event(r))
+        return events_map
+
+    # --- survival observations ---
+
+    def upsert_observation(self, obs: SurvivalObservation) -> None:
         self.conn.execute(
-            "DELETE FROM downstream_events WHERE source_commit_sha=?", (source_sha,)
-        )
-
-    # --- patterns ---
-
-    def upsert_pattern(self, pattern: PatternEntry) -> None:
-        now = datetime.utcnow().isoformat()
-        self.conn.execute(
-            """INSERT INTO patterns
-               (dimension, key, avg_score, commit_count,
-                revert_count, bug_fix_count, computed_at)
-               VALUES (?,?,?,?,?,?,?)
-               ON CONFLICT(dimension, key) DO UPDATE SET
-                 avg_score=excluded.avg_score,
-                 commit_count=excluded.commit_count,
-                 revert_count=excluded.revert_count,
-                 bug_fix_count=excluded.bug_fix_count,
-                 computed_at=excluded.computed_at
+            """INSERT INTO survival_observations
+               (commit_sha, label, checkpoint_days, observed_sha, observed_at, surviving_lines)
+               VALUES (?,?,?,?,?,?)
+               ON CONFLICT(commit_sha, label) DO UPDATE SET
+                 checkpoint_days=excluded.checkpoint_days,
+                 observed_sha=excluded.observed_sha,
+                 observed_at=excluded.observed_at,
+                 surviving_lines=excluded.surviving_lines
             """,
             (
-                pattern.dimension,
-                pattern.key,
-                pattern.avg_score,
-                pattern.commit_count,
-                pattern.revert_count,
-                pattern.bug_fix_count,
-                now,
+                obs.commit_sha,
+                obs.label,
+                obs.checkpoint_days,
+                obs.observed_sha,
+                obs.observed_at.isoformat(),
+                obs.surviving_lines,
             ),
         )
 
-    def get_patterns(self, dimension: Optional[str] = None) -> list[PatternEntry]:
-        if dimension:
-            rows = self.conn.execute(
-                "SELECT * FROM patterns WHERE dimension=? ORDER BY avg_score", (dimension,)
-            ).fetchall()
-        else:
-            rows = self.conn.execute(
-                "SELECT * FROM patterns ORDER BY dimension, avg_score"
-            ).fetchall()
-        return [
-            PatternEntry(
-                dimension=r["dimension"],
-                key=r["key"],
-                avg_score=r["avg_score"],
-                commit_count=r["commit_count"],
-                revert_count=r["revert_count"],
-                bug_fix_count=r["bug_fix_count"],
-            )
-            for r in rows
-        ]
+    def get_observation_labels(self, sha: str) -> set[str]:
+        rows = self.conn.execute(
+            "SELECT label FROM survival_observations WHERE commit_sha=?", (sha,)
+        ).fetchall()
+        return {r["label"] for r in rows}
 
-    def commit_exists(self, sha: str) -> bool:
+    def _get_batch_observations(self, shas: list[str]) -> dict[str, dict[str, SurvivalObservation]]:
+        obs_map: dict[str, dict[str, SurvivalObservation]] = defaultdict(dict)
+        for i in range(0, len(shas), 900):
+            chunk = shas[i : i + 900]
+            placeholders = ",".join("?" for _ in chunk)
+            rows = self.conn.execute(
+                f"SELECT * FROM survival_observations WHERE commit_sha IN ({placeholders})",
+                chunk,
+            ).fetchall()
+            for r in rows:
+                obs_map[r["commit_sha"]][r["label"]] = SurvivalObservation(
+                    commit_sha=r["commit_sha"],
+                    label=r["label"],
+                    checkpoint_days=r["checkpoint_days"],
+                    observed_sha=r["observed_sha"],
+                    observed_at=datetime.fromisoformat(r["observed_at"]),
+                    surviving_lines=r["surviving_lines"],
+                )
+        return dict(obs_map)
+
+    # --- derived views (assembled at query time) ---
+
+    def get_commit_fate(self, commit_sha: str) -> Optional[CommitFate]:
         row = self.conn.execute(
-            "SELECT 1 FROM commit_fates WHERE commit_sha=?", (sha,)
+            "SELECT * FROM commits WHERE commit_sha=?", (commit_sha,)
         ).fetchone()
-        return row is not None
+        if not row:
+            return None
+        fates = self._assemble_fates([row])
+        return fates[0] if fates else None
+
+    def get_all_commit_fates(
+        self,
+        since: Optional[datetime] = None,
+        path_filter: Optional[str] = None,
+        author_filter: Optional[str] = None,
+        limit: Optional[int] = None,
+        offset: int = 0,
+    ) -> list[CommitFate]:
+        query = "SELECT * FROM commits WHERE 1=1"
+        params: list = []
+        if since:
+            query += " AND authored_at >= ?"
+            params.append(since.isoformat())
+        if author_filter:
+            query += " AND (author_email LIKE ? OR author_name LIKE ?)"
+            params.extend([f"%{author_filter}%", f"%{author_filter}%"])
+        query += " ORDER BY authored_at DESC"
+        if limit is not None:
+            query += " LIMIT ? OFFSET ?"
+            params.extend([limit, offset])
+        rows = self.conn.execute(query, params).fetchall()
+        fates = self._assemble_fates(rows)
+        if path_filter:
+            fates = [
+                f for f in fates
+                if any(p.startswith(path_filter) for p in f.file_paths)
+            ]
+        return fates
+
+    def _assemble_fates(self, rows: list[sqlite3.Row]) -> list[CommitFate]:
+        from git_aftermerge.analyzer.scorer import compute_score
+        from git_aftermerge.analyzer.survival import parse_commit_type
+
+        shas = [r["commit_sha"] for r in rows]
+        links_map = self._get_batch_links(shas)
+        obs_map = self._get_batch_observations(shas)
+
+        files_map: dict[str, list[FileChange]] = defaultdict(list)
+        for i in range(0, len(shas), 900):
+            chunk = shas[i : i + 900]
+            placeholders = ",".join("?" for _ in chunk)
+            for r in self.conn.execute(
+                f"SELECT * FROM commit_files WHERE commit_sha IN ({placeholders})", chunk
+            ).fetchall():
+                files_map[r["commit_sha"]].append(_row_to_file_change(r))
+
+        now = datetime.utcnow()
+        fates = []
+        for row in rows:
+            sha = row["commit_sha"]
+            authored_at = datetime.fromisoformat(row["authored_at"])
+            events = links_map.get(sha, [])
+            observations = obs_map.get(sha, {})
+            files = files_map.get(sha, [])
+            lines_added = row["lines_added"]
+
+            head_obs = observations.get(HEAD_LABEL)
+            surviving = head_obs.surviving_lines if head_obs else lines_added
+
+            early_obs = observations.get(checkpoint_label(CHECKPOINT_DAYS[0]))
+            early_ratio = (
+                early_obs.surviving_lines / lines_added
+                if early_obs and lines_added > 0 else None
+            )
+
+            reverted = any(e.event_type == EventType.REVERT_LINKED for e in events)
+            fate_val = _determine_fate(lines_added, surviving, reverted)
+
+            fate = CommitFate(
+                commit_sha=sha,
+                author=row["author_email"],
+                author_tool=row["author_tool"],
+                author_model=row["author_model"],
+                merged_at=authored_at,
+                original_lines_added=lines_added,
+                original_lines_modified=row["lines_deleted"],
+                surviving_lines=surviving,
+                survival_score=0,
+                fate=fate_val,
+                days_since_merge=(now - authored_at).days,
+                downstream_events=events,
+                file_paths=[f.path for f in files],
+                commit_type=parse_commit_type(row["message_subject"]),
+                ai_attributed=row["cohort"] == Cohort.AI_AGENT.value,
+                cohort=row["cohort"],
+                maturity=_dominant_maturity(files, authored_at),
+                early_survival_ratio=early_ratio,
+                ai_session=row["ai_session"],
+                human_ratio=row["human_ratio"],
+            )
+            fate.survival_score = compute_score(fate)
+            fates.append(fate)
+        return fates
+
+    def get_curve_rows(self, since: Optional[datetime] = None) -> list[dict]:
+        """Rows for survival-curve computation: one dict per commit with its
+        cohort, dominant maturity tier, tracked lines, age, and observations."""
+        query = "SELECT * FROM commits WHERE lines_added > 0"
+        params: list = []
+        if since:
+            query += " AND authored_at >= ?"
+            params.append(since.isoformat())
+        rows = self.conn.execute(query, params).fetchall()
+        shas = [r["commit_sha"] for r in rows]
+        obs_map = self._get_batch_observations(shas)
+
+        files_map: dict[str, list[FileChange]] = defaultdict(list)
+        for i in range(0, len(shas), 900):
+            chunk = shas[i : i + 900]
+            placeholders = ",".join("?" for _ in chunk)
+            for r in self.conn.execute(
+                f"SELECT * FROM commit_files WHERE commit_sha IN ({placeholders})", chunk
+            ).fetchall():
+                files_map[r["commit_sha"]].append(_row_to_file_change(r))
+
+        now = datetime.utcnow()
+        out = []
+        for row in rows:
+            sha = row["commit_sha"]
+            authored_at = datetime.fromisoformat(row["authored_at"])
+            out.append({
+                "sha": sha,
+                "cohort": row["cohort"],
+                "tool": row["author_tool"],
+                "maturity": _dominant_maturity(files_map.get(sha, []), authored_at),
+                "lines_added": row["lines_added"],
+                "age_days": (now - authored_at).days,
+                "observations": {
+                    label: obs.surviving_lines
+                    for label, obs in obs_map.get(sha, {}).items()
+                },
+            })
+        return out
+
+
+def _determine_fate(lines_added: int, surviving: int, reverted: bool) -> Fate:
+    if reverted:
+        return Fate.REVERTED
+    if lines_added <= 0:
+        return Fate.SURVIVED
+    ratio = surviving / lines_added
+    if ratio >= 0.9:
+        return Fate.SURVIVED
+    if ratio >= 0.3:
+        return Fate.MODIFIED
+    if ratio == 0:
+        return Fate.SUPERSEDED
+    return Fate.DECAYED
+
+
+def _dominant_maturity(files: list[FileChange], authored_at: datetime) -> Optional[str]:
+    """Maturity tier of the code a commit touched, weighted by lines added."""
+    if not files:
+        return None
+    weights: dict[MaturityTier, int] = defaultdict(int)
+    for f in files:
+        age = None
+        if f.prev_touch_at is not None:
+            age = (authored_at.replace(tzinfo=None) - f.prev_touch_at.replace(tzinfo=None)).days
+        weights[maturity_of(age)] += max(f.lines_added, 1)
+    return max(weights.items(), key=lambda kv: kv[1])[0].value
+
+
+def _row_to_event(r: sqlite3.Row) -> DownstreamEvent:
+    return DownstreamEvent(
+        event_type=EventType(r["link_type"]),
+        commit_sha=r["event_commit_sha"],
+        date=datetime.fromisoformat(r["event_date"]),
+        lines_affected=r["lines_affected"],
+        commit_message=r["commit_message"] or "",
+        author=r["author"] or "",
+    )
+
+
+def _row_to_file_change(r: sqlite3.Row) -> FileChange:
+    return FileChange(
+        path=r["path"],
+        lines_added=r["lines_added"],
+        lines_deleted=r["lines_deleted"],
+        prev_touch_at=(
+            datetime.fromisoformat(r["prev_touch_at"]) if r["prev_touch_at"] else None
+        ),
+    )

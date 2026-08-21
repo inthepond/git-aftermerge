@@ -4,14 +4,18 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-from mcp.server.fastmcp import FastMCP
+try:
+    from mcp.server.fastmcp import FastMCP as _Server  # mcp SDK 1.x
+except ImportError:  # mcp SDK 2.x renamed FastMCP
+    from mcp.server.mcpserver import MCPServer as _Server
 
+from git_aftermerge.analyzer.curves import compute_curves
 from git_aftermerge.analyzer.patterns import PatternAggregator
 from git_aftermerge.output import json_out, markdown
 from git_aftermerge.storage.db import Database
 from git_aftermerge.storage.models import EventType
 
-mcp = FastMCP("git-aftermerge")
+mcp = _Server("git-aftermerge")
 
 
 def _get_db() -> Database:
@@ -130,6 +134,20 @@ def aftermerge_get_recent_failures(since: str = "30 days ago") -> str:
             )
         ]
         return json_out.to_json(failures)
+    finally:
+        db.close()
+
+
+@mcp.tool()
+def aftermerge_get_survival_curves(by: str = "cohort") -> str:
+    """Survival curves: fraction of merged lines still alive at 7/30/90/180/365
+    days, grouped by author cohort (ai-agent/human/bot), maturity of the touched
+    code, or both ("cohort+maturity"). Within-repo comparison only."""
+    db = _get_db()
+    try:
+        rows = db.get_curve_rows()
+        curves = compute_curves(rows, by=by)
+        return json_out.to_json(curves)
     finally:
         db.close()
 

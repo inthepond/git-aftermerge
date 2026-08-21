@@ -14,21 +14,24 @@ AI coding agents (Claude Code, Codex, Cursor, etc.) generate code, open PRs, and
 
 ## Key Features
 
-- **Survival tracking** — line-level analysis of how code changes persist over time
+- **Attribution** — assigns every commit a cohort (ai-agent / bot / human) from trailers (`Co-Authored-By: Claude`, `Generated-By:` convention), agent/bot identities, and message markers; works retroactively on existing history
+- **Survival curves** — fraction of each cohort's lines still alive 7/30/90/180/365 days after merge, cross-cut by code maturity (new / young / mature)
+- **Facts-only storage** — SQLite holds only facts from git; scores, fates, and curves are computed at query time, so metric definitions can change without a rescan
 - **Revert detection** — automatic detection of standard and manual reverts
 - **Bug-fix correlation** — links downstream bug fixes back to originating commits
 - **Churn spike detection** — identifies areas of unusually high modification activity
-- **Pattern aggregation** — roll-up of survival data by path, author, commit type, size, and language
+- **Pattern aggregation** — roll-up of survival data by path, author, cohort, maturity, commit type, size, and language
 - **MCP server** — expose all tools to AI coding agents via Model Context Protocol
 - **Watch mode** — auto-scan on new commits for continuous monitoring
 
 ## How It Works
 
 ```
-Commit merged → git-aftermerge scan → survival tracked via git blame
+Commit merged → git-aftermerge scan → cohort attributed (trailers, identities)
+                                     → blame snapshots at 7/30/90/180/365 days
                                      → reverts detected
                                      → bug-fix correlations found
-                                     → patterns aggregated
+                                     → survival curves per cohort × maturity
                                      → context file generated for agents
 ```
 

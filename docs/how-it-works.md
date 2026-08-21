@@ -4,14 +4,84 @@
 
 git-aftermerge performs deterministic, read-only analysis of your git history. It never modifies your repository. All data is stored in a local SQLite database at `.aftermerge/aftermerge.db`.
 
-## Survival Tracking
+## Facts vs. Derived Metrics
 
-For each commit being analyzed:
+The database stores **only facts** recoverable from git plus deterministic
+attribution: commit metadata, per-file line counts, when each file was
+previously touched, detected commit links (reverts, fix correlations), and
+blame-snapshot observations. Every judged or scored quantity — survival
+score, fate label, maturity tier, pattern aggregate, survival curve — is
+computed **at query time**. Scoring rules can change without a rescan, and
+the whole database can always be rebuilt with `scan --full`.
 
-1. Get the list of files modified and lines added
-2. Run `git blame` at current HEAD for each file
-3. Count how many lines are still attributed to the original commit
-4. Compute a survival ratio: `surviving_lines / original_lines_added`
+All diffing uses `--diff-algorithm=histogram` with whitespace ignored
+(`-w`, including blame), so formatting and indentation churn does not
+pollute the survival signal.
+
+## Attribution (who wrote this commit)
+
+Every commit is assigned a **cohort**:
+
+| Cohort | Meaning |
+|--------|---------|
+| `ai-agent` | LLM coding agents: Claude Code, Cursor, Copilot, aider, Devin, … |
+| `bot` | Deterministic automation: Dependabot, Renovate, … |
+| `human` | Everything else |
+
+Detection priority:
+
+1. **Convention trailers** (recommended going forward): `Generated-By:`,
+   `AI-Model:`, `AI-Session:`, `AI-Human-Ratio:`
+2. **Co-author trailers** already in history: `Co-Authored-By: Claude
+   <noreply@anthropic.com>` (Claude Code's default), Cursor Agent, Copilot, …
+3. **Author identity**: agent/bot accounts (`devin-ai-integration[bot]`,
+   `dependabot[bot]`, aider's `(aider)` suffix, …)
+4. **Message markers**: "Generated with Claude Code", `aider:` prefixes
+
+The `bot` cohort is a **negative control**: bots are fully automated but
+deterministic, so if bot commits show AI-like churn, the detection logic is
+suspect — not the bots.
+
+## Survival Observations & Curves
+
+For each commit, blame snapshots are recorded at fixed checkpoints — **7,
+30, 90, 180, and 365 days** after authoring — and at HEAD:
+
+1. Find the repo state at each checkpoint (`git rev-list --before`)
+2. Verify the state actually **contains** the commit (`git merge-base
+   --is-ancestor`) — under squash/rebase PR flows a checkpoint state can
+   predate the commit landing, and blaming there would record a false death
+3. Run `git blame -w` on the commit's files at that state
+4. Record how many lines are still attributed to the commit
+
+The survival clock is anchored at the **committer date** — when the change
+landed on the line of history — not the author date, which under PR flows
+can be weeks earlier. A commit only contributes to checkpoints it has aged
+past and to states that contain it (right-censoring); historical
+observations are immutable and never recomputed. Survival curves
+(`git-aftermerge curve`) aggregate these observations per cohort ×
+maturity tier, line-weighted.
+
+**Curves are within-repo comparisons only.** Repos that accept AI commits
+skew young/small/single-maintainer, so absolute rates are not comparable
+across repositories — compare the AI-vs-human *difference* inside one repo,
+where project maturity, team, domain, and test culture are held constant.
+
+## Code Maturity Tiers
+
+Each file change records when the file was previously touched (one cheap
+full-history pass). At query time this becomes a maturity tier:
+
+| Tier | Age of touched code |
+|------|---------------------|
+| `new` | < 30 days (or file created by the commit) |
+| `young` | 30–365 days |
+| `mature` | > 365 days |
+
+Without this layer, churn numbers are noise: healthy iteration on new
+features and AI breakage of mature logic would count as the same thing.
+A commit's tier is the lines-weighted dominant tier of its files. Renames
+appear as new files (known limitation of the coarse pass).
 
 Binary files (images, compiled assets, etc.) are automatically skipped.
 
@@ -73,7 +143,7 @@ For each commit identified as a bug fix (commit type `fix` or message contains f
 
 ## Pattern Aggregation
 
-Commits are grouped along five dimensions:
+Commits are grouped along seven dimensions (computed at query time):
 
 | Dimension | Grouping |
 |-----------|----------|
@@ -82,6 +152,8 @@ Commits are grouped along five dimensions:
 | **by_author** | Committer email/name |
 | **by_size** | Small (<20 lines), Medium (20–100), Large (>100) |
 | **by_language** | File extension of modified files |
+| **by_cohort** | ai-agent / bot / human |
+| **by_maturity** | new / young / mature |
 
 For each group: average score, commit count, revert count, and bug-fix count.
 

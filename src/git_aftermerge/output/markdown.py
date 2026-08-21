@@ -8,6 +8,7 @@ from git_aftermerge.storage.models import CommitFate, EventType, PatternReport
 def generate_context(
     report: PatternReport,
     recent_failures: list[CommitFate],
+    curves: list | None = None,
     max_lines: int = 80,
 ) -> str:
     lines: list[str] = []
@@ -28,6 +29,20 @@ def generate_context(
         f"Overall survival score: **{report.overall_survival_score:.0f}/100**."
     )
     lines.append("")
+
+    # Survival curves by cohort
+    if curves:
+        lines.append("### Survival by Cohort (fraction of merged lines still alive)")
+        for curve in curves:
+            checkpoints = ", ".join(
+                f"{p.days}d: {p.survival_rate * 100:.0f}%"
+                for p in curve.points if p.days > 0
+            )
+            if checkpoints:
+                n = max((p.commit_count for p in curve.points), default=0)
+                lines.append(f"- **{curve.cohort}** ({n} commits) — {checkpoints}")
+        lines.append("_Within-repo comparison only; 'bot' is a deterministic negative control._")
+        lines.append("")
 
     # Top risky areas
     risky = report.risky_areas[:3]

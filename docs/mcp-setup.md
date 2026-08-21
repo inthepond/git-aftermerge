@@ -83,6 +83,16 @@ Get commits that were reverted or caused bug-fixes recently.
 
 **Returns:** JSON array of `CommitFate` objects with REVERT_LINKED or BUG_FIX_LINKED events.
 
+### `aftermerge_get_survival_curves`
+
+Survival curves: fraction of merged lines still alive at 7/30/90/180/365 days.
+
+**Parameters:**
+
+- `by` (string, optional, default `"cohort"`) — grouping: `cohort`, `maturity`, or `cohort+maturity`
+
+**Returns:** JSON array of curves (cohort, maturity, points with days / survival_rate / commit_count / lines_tracked). Within-repo comparison only.
+
 ### `aftermerge_get_context`
 
 Get a structured markdown summary for agent context injection.

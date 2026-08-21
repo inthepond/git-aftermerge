@@ -58,6 +58,38 @@ git-aftermerge report [OPTIONS]
 
 Sections: overview, riskiest areas, most stable areas, author comparison, recent failures.
 
+## `git-aftermerge curve`
+
+Show survival curves: the fraction of merged lines still alive 7/30/90/180/365 days after merge, grouped by author cohort and/or code maturity.
+
+```bash
+git-aftermerge curve [OPTIONS]
+```
+
+| Option | Description |
+|--------|-------------|
+| `--by TEXT` | Grouping: `cohort` (default), `maturity`, or `cohort+maturity` |
+| `--json` | Output as JSON |
+| `--since TEXT` | Limit analysis window |
+| `--min-commits INT` | Hide groups with fewer commits (default: `3`) |
+
+Curves are **within-repo comparisons**: AI-agent vs human vs bot cohorts of the same repository. Absolute rates are not comparable across repos. The `bot` cohort (Dependabot, Renovate) is a deterministic negative control.
+
+## `git-aftermerge attribution`
+
+Detect AI/bot attribution already present in commit history — a standalone backfill detector that needs no database.
+
+```bash
+git-aftermerge attribution [OPTIONS]
+```
+
+| Option | Description |
+|--------|-------------|
+| `--repo PATH` | Repository to inspect (default: current directory) |
+| `--json` | Per-commit attribution as JSON |
+
+Reads convention trailers (`Generated-By:`, `AI-Model:`, `AI-Session:`, `AI-Human-Ratio:`), co-author trailers (`Co-Authored-By: Claude` — Claude Code's default — Cursor, Copilot, …), agent/bot author identities, and message markers.
+
 ## `git-aftermerge context`
 
 Generate an agent-consumable context file.

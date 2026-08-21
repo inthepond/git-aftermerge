@@ -2,6 +2,14 @@
 
 > Track the downstream fate of every commit. Feed structured post-merge feedback to AI coding agents.
 
+> **Note (v0.2):** this document is the original v0.1 build spec, kept for
+> history. v0.2 replaced the storage design with a facts-only schema
+> (`commits` / `commit_files` / `commit_links` / `survival_observations`;
+> scores, fates, patterns, and curves are computed at query time), added
+> trailer-based attribution with cohorts (ai-agent / bot / human), code
+> maturity tiers, checkpoint survival observations, and the `curve` and
+> `attribution` commands. See `docs/how-it-works.md` for current behavior.
+
 ## What This Is
 
 git-aftermerge is a Python CLI + MCP server that analyzes what happens to code *after* it gets merged — tracking survival, reverts, churn, and bug-fix correlations — then feeds structured feedback back to coding agents so they learn from their own history.

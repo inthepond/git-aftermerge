@@ -3,23 +3,32 @@
 import re
 import subprocess
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
+
+# Histogram diff + whitespace-skipping everywhere: different diff algorithms
+# produce different line counts, and formatting/indentation churn would
+# otherwise pollute the survival signal.
+DIFF_FLAGS = ["--diff-algorithm=histogram", "-w"]
+
+_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 
 
 @dataclass
 class CommitInfo:
     sha: str
-    author: str
+    author: str                 # author email (v1 compatibility)
     date: datetime
-    message: str
+    message: str                # subject line
     files_changed: list[str] = field(default_factory=list)
     lines_added: int = 0
     lines_deleted: int = 0
     is_merge: bool = False
     # path -> (added, deleted)
     file_details: dict[str, tuple[int, int]] = field(default_factory=dict)
+    author_name: str = ""
+    body: str = ""              # full message: subject + body + trailers
 
 
 @dataclass
@@ -47,13 +56,36 @@ class RevertInfo:
     date: datetime
 
 
+@dataclass
+class TouchRecord:
+    """One commit's footprint in the full-history touch pass."""
+    sha: str
+    date: datetime
+    paths: list[str] = field(default_factory=list)
+
+
+def _parse_iso(date_str: str) -> datetime:
+    """Parse an ISO date from git and normalize to naive UTC.
+
+    All datetimes in the pipeline are naive UTC so fact rows, checkpoint
+    arithmetic, and event comparisons never mix aware and naive values.
+    """
+    try:
+        dt = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+    except ValueError:
+        return datetime.utcnow()
+    if dt.tzinfo is not None:
+        dt = dt.astimezone(timezone.utc).replace(tzinfo=None)
+    return dt
+
+
 class GitReader:
     def __init__(self, repo_path: Path) -> None:
         self.repo_path = repo_path
 
     def _run(self, *args: str, check: bool = True) -> str:
         result = subprocess.run(
-            ["git", *args],
+            ["git", "-c", "core.quotepath=off", *args],
             cwd=self.repo_path,
             capture_output=True,
             text=True,
@@ -74,13 +106,18 @@ class GitReader:
         return result.strip()
 
     def get_merge_commits(self, since: Optional[str] = None) -> list[CommitInfo]:
-        """List commits on the default branch with diff stats in a single git call."""
-        args = [
-            "log",
-            "--format=__COMMIT__%H\x1f%ae\x1f%aI\x1f%s\x1f%P",
-            "--numstat",
-            "--no-merges",
-        ]
+        """List commits on the default branch with diff stats in a single git call.
+
+        Fetches the full message body (%B) so trailer-based attribution
+        (Co-Authored-By, Generated-By, …) has raw material to work with.
+
+        Dates are committer dates (%cI) — when the change actually landed.
+        Under squash/rebase PR flows the author date is when the code was
+        written on a branch, weeks before it reached the mainline; using it
+        as the survival clock produces false early deaths.
+        """
+        fmt = "__COMMIT__%H\x1f%an\x1f%ae\x1f%cI\x1f%P\x1f%B\x1e"
+        args = ["log", f"--format={fmt}", "--numstat", "--no-merges", *DIFF_FLAGS]
         if since:
             args += [f"--since={since}"]
         output = self._run(*args)
@@ -88,49 +125,90 @@ class GitReader:
             return []
 
         commits: list[CommitInfo] = []
-        current: Optional[CommitInfo] = None
-
-        for line in output.splitlines():
-            if line.startswith("__COMMIT__"):
-                if current is not None:
-                    current.files_changed = list(current.file_details.keys())
-                    commits.append(current)
-                raw = line[len("__COMMIT__"):]
-                parts = raw.split("\x1f")
-                if len(parts) < 4:
-                    current = None
+        for chunk in output.split("__COMMIT__"):
+            if not chunk.strip():
+                continue
+            head, sep, tail = chunk.partition("\x1e")
+            parts = head.split("\x1f")
+            if len(parts) < 6 or not _SHA_RE.match(parts[0]):
+                continue
+            sha, author_name, author_email, date_str, parents_str, body = parts[:6]
+            body = body.strip("\n")
+            commit = CommitInfo(
+                sha=sha,
+                author=author_email,
+                date=_parse_iso(date_str),
+                message=body.splitlines()[0] if body else "",
+                is_merge=len(parents_str.split()) > 1,
+                author_name=author_name,
+                body=body,
+            )
+            for line in tail.splitlines():
+                nparts = line.split("\t")
+                if len(nparts) != 3:
                     continue
-                sha, author, date_str, message = parts[0], parts[1], parts[2], parts[3]
-                parents = parts[4].split() if len(parts) > 4 else []
-                try:
-                    date = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
-                except ValueError:
-                    date = datetime.utcnow()
-                current = CommitInfo(
-                    sha=sha, author=author, date=date, message=message,
-                    is_merge=len(parents) > 1,
-                )
-            elif line.strip() and current is not None:
-                parts = line.split("\t")
-                if len(parts) == 3:
-                    added_str, deleted_str, path = parts
-                    if added_str == "-" or deleted_str == "-":
-                        continue  # binary file
-                    added = int(added_str)
-                    deleted = int(deleted_str)
-                    current.file_details[path] = (added, deleted)
-                    current.lines_added += added
-                    current.lines_deleted += deleted
-
-        if current is not None:
-            current.files_changed = list(current.file_details.keys())
-            commits.append(current)
+                added_str, deleted_str, path = nparts
+                if added_str == "-" or deleted_str == "-":
+                    continue  # binary file
+                added = int(added_str)
+                deleted = int(deleted_str)
+                commit.file_details[path] = (added, deleted)
+                commit.lines_added += added
+                commit.lines_deleted += deleted
+            commit.files_changed = list(commit.file_details.keys())
+            commits.append(commit)
 
         return commits
 
+    def get_touch_history(self) -> list[TouchRecord]:
+        """Full history, oldest first, with the paths each commit touched.
+
+        One cheap pass that lets the scanner compute, for every (commit, file),
+        when that file was previously modified — the raw fact behind maturity
+        tiers. Renames appear as a fresh path (known limitation).
+        """
+        output = self._run(
+            "log", "--reverse", "--format=__C__%H\x1f%cI", "--name-only", "--no-merges"
+        )
+        records: list[TouchRecord] = []
+        current: Optional[TouchRecord] = None
+        for line in output.splitlines():
+            if line.startswith("__C__"):
+                if current is not None:
+                    records.append(current)
+                parts = line[len("__C__"):].split("\x1f")
+                if len(parts) < 2 or not _SHA_RE.match(parts[0]):
+                    current = None
+                    continue
+                current = TouchRecord(sha=parts[0], date=_parse_iso(parts[1]))
+            elif line.strip() and current is not None:
+                current.paths.append(line.strip())
+        if current is not None:
+            records.append(current)
+        return records
+
+    def rev_before(self, when: datetime, ref: str = "HEAD") -> Optional[str]:
+        """The most recent commit on ref at or before a point in time."""
+        output = self._run(
+            "rev-list", "-1", f"--before={when.isoformat()}", ref, check=False
+        )
+        sha = output.strip()
+        return sha if sha else None
+
+    def is_ancestor(self, ancestor: str, descendant: str) -> bool:
+        """Whether ``ancestor`` is contained in ``descendant``'s history."""
+        result = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", ancestor, descendant],
+            cwd=self.repo_path,
+            capture_output=True,
+        )
+        return result.returncode == 0
+
     def get_blame_snapshot(self, file_path: str, at_commit: str) -> dict[int, BlameEntry]:
         """Run git blame --porcelain for a file at a specific commit."""
-        output = self._run("blame", "--porcelain", at_commit, "--", file_path, check=False)
+        output = self._run(
+            "blame", "--porcelain", "-w", at_commit, "--", file_path, check=False
+        )
         if not output.strip():
             return {}
 
@@ -181,7 +259,9 @@ class GitReader:
 
     def get_diff_stats(self, commit_sha: str) -> DiffStats:
         """Return files changed, lines added/deleted for a commit."""
-        output = self._run("diff-tree", "--numstat", "-r", "--root", commit_sha)
+        output = self._run(
+            "diff-tree", "--numstat", "-r", "--root", *DIFF_FLAGS, commit_sha
+        )
         file_details: dict[str, tuple[int, int]] = {}
         total_added = 0
         total_deleted = 0
@@ -239,15 +319,11 @@ class GitReader:
             match = re.search(r"This reverts commit ([0-9a-f]{7,40})", body, re.IGNORECASE)
             if match:
                 original_sha = match.group(1)
-                try:
-                    date = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
-                except ValueError:
-                    date = datetime.utcnow()
                 reverts.append(RevertInfo(
                     reverting_sha=sha,
                     original_sha=original_sha,
                     reverting_message=subject,
-                    date=date,
+                    date=_parse_iso(date_str),
                 ))
 
         return reverts
@@ -274,18 +350,17 @@ class GitReader:
             if len(parts) < 4:
                 continue
             sha, author, date_str, message = parts
-            try:
-                date = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
-            except ValueError:
-                date = datetime.utcnow()
-            commits.append(CommitInfo(sha=sha, author=author, date=date, message=message))
+            commits.append(CommitInfo(
+                sha=sha, author=author, date=_parse_iso(date_str), message=message
+            ))
         return commits
 
     def get_added_lines_by_commit(self, commit_sha: str, file_path: str) -> list[int]:
         """Return line numbers added by commit in file (1-indexed)."""
         # Use diff to find which lines were added in the commit for this file
         output = self._run(
-            "diff", f"{commit_sha}^", commit_sha, "--", file_path, check=False
+            "diff", *DIFF_FLAGS, f"{commit_sha}^", commit_sha, "--", file_path,
+            check=False,
         )
         if not output:
             return []
@@ -345,9 +420,7 @@ class GitReader:
             if len(parts) < 4:
                 continue
             sha, author, date_str, message = parts
-            try:
-                date = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
-            except ValueError:
-                date = datetime.utcnow()
-            commits.append(CommitInfo(sha=sha, author=author, date=date, message=message))
+            commits.append(CommitInfo(
+                sha=sha, author=author, date=_parse_iso(date_str), message=message
+            ))
         return commits

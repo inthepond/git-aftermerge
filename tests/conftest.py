@@ -512,3 +512,105 @@ def submodule_repo(tmp_path):
         "repo_dir": repo_dir,
         "shas": {"initial": initial_sha, "add_submodule": sub_sha},
     }
+
+
+@pytest.fixture
+def ai_repo(tmp_path):
+    """Repo with mixed cohorts: human, Claude-trailer AI, convention-trailer AI,
+    and a dependabot commit (negative control). File ages span maturity tiers."""
+    repo_dir = tmp_path / "ai-repo"
+    repo_dir.mkdir()
+
+    def rg(*args, date="", env=None):
+        return run_git(*args, cwd=repo_dir, date=date, env=env)
+
+    rg("init")
+    rg("config", "user.email", "dekko@test.com")
+    rg("config", "user.name", "Dekko")
+
+    def iso(dt):
+        return dt.strftime("%Y-%m-%dT%H:%M:%S")
+
+    # 1. Human commit, long ago (mature-tier base)
+    d0 = datetime(2025, 6, 1, 12, 0, 0)
+    (repo_dir / "requirements.txt").write_text("requests==2.31.0\nflask==3.0.0\n")
+    src = repo_dir / "src"
+    src.mkdir()
+    core_lines = "\n".join(f"def core_{i}():\n    return {i}\n" for i in range(15))
+    (src / "core.py").write_text(core_lines)
+    rg("add", "-A")
+    rg("commit", "-m", "feat: initial core", date=iso(d0))
+    human_old_sha = rg("rev-parse", "HEAD")
+
+    # 2. Claude Code style commit (Co-Authored-By trailer): touches old core.py
+    #    and creates a new file
+    d1 = datetime(2026, 3, 1, 12, 0, 0)
+    (src / "core.py").write_text(core_lines + "\n\ndef core_extra():\n    return 99\n")
+    ai_lines = "\n".join(f"def ai_{i}():\n    return {i} * 2\n" for i in range(20))
+    (src / "ai_feature.py").write_text(ai_lines)
+    rg("add", "-A")
+    rg(
+        "commit", "-m",
+        "feat: add ai feature\n\n"
+        "\U0001f916 Generated with [Claude Code](https://claude.com/claude-code)\n\n"
+        "Co-Authored-By: Claude <noreply@anthropic.com>",
+        date=iso(d1),
+    )
+    claude_sha = rg("rev-parse", "HEAD")
+
+    # 3. Dependabot commit (bot cohort — negative control)
+    d2 = datetime(2026, 3, 5, 12, 0, 0)
+    (repo_dir / "requirements.txt").write_text("requests==2.32.0\nflask==3.0.0\n")
+    rg("add", "-A")
+    rg(
+        "commit", "-m", "chore(deps): bump requests from 2.31.0 to 2.32.0",
+        date=iso(d2),
+        env={
+            "GIT_AUTHOR_NAME": "dependabot[bot]",
+            "GIT_AUTHOR_EMAIL": "49699333+dependabot[bot]@users.noreply.github.com",
+        },
+    )
+    bot_sha = rg("rev-parse", "HEAD")
+
+    # 4. Forward-convention trailer commit
+    d3 = datetime(2026, 4, 1, 12, 0, 0)
+    tool_lines = "\n".join(f"def tool_{i}():\n    return {i} + 1\n" for i in range(10))
+    (src / "tool_feature.py").write_text(tool_lines)
+    rg("add", "-A")
+    rg(
+        "commit", "-m",
+        "feat: tool feature\n\n"
+        "Generated-By: claude-code\n"
+        "AI-Model: claude-sonnet-4-6\n"
+        "AI-Session: abc123\n"
+        "AI-Human-Ratio: 0.25",
+        date=iso(d3),
+    )
+    convention_sha = rg("rev-parse", "HEAD")
+
+    # 5. Human commit rewriting half the AI feature (AI survival drops)
+    d4 = datetime(2026, 4, 10, 12, 0, 0)
+    rewritten = "\n".join(
+        f"def ai_{i}():\n    return {i} * 3  # tuned\n" if i < 10
+        else f"def ai_{i}():\n    return {i} * 2\n"
+        for i in range(20)
+    )
+    (src / "ai_feature.py").write_text(rewritten)
+    rg("add", "-A")
+    rg("commit", "-m", "refactor: tune ai feature", date=iso(d4))
+    human_rewrite_sha = rg("rev-parse", "HEAD")
+
+    return {
+        "repo_dir": repo_dir,
+        "shas": {
+            "human_old": human_old_sha,
+            "claude": claude_sha,
+            "bot": bot_sha,
+            "convention": convention_sha,
+            "human_rewrite": human_rewrite_sha,
+        },
+        "dates": {
+            "human_old": d0, "claude": d1, "bot": d2,
+            "convention": d3, "human_rewrite": d4,
+        },
+    }

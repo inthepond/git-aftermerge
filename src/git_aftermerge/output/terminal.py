@@ -163,6 +163,109 @@ def print_report(report: PatternReport, c: Console = console) -> None:
     c.print()
 
 
+COHORT_STYLES = {
+    "ai-agent": "magenta",
+    "human": "cyan",
+    "bot": "dim",
+    "all": "white",
+}
+
+
+def _rate_style(rate: float) -> str:
+    if rate >= 0.8:
+        return "green"
+    if rate >= 0.5:
+        return "yellow"
+    return "red"
+
+
+def print_curves(curves, c: Console = console, total_commits: int = 0) -> None:
+    """Render survival curves as a checkpoint table with sparkline bars."""
+    c.print()
+    if not curves:
+        c.print(
+            "[yellow]No survival data yet. Run[/yellow] "
+            "[cyan]git-aftermerge scan[/cyan] first."
+        )
+        return
+
+    day_columns = sorted({p.days for curve in curves for p in curve.points})
+
+    tbl = Table(box=box.SIMPLE, show_header=True, header_style="bold",
+                title="Line survival by cohort (fraction of merged lines still alive)")
+    tbl.add_column("Cohort")
+    tbl.add_column("Commits", justify="right")
+    for d in day_columns:
+        tbl.add_column("merge" if d == 0 else f"{d}d", justify="right")
+    tbl.add_column("Trend")
+
+    for curve in curves:
+        style = COHORT_STYLES.get(curve.cohort, "white")
+        label = curve.cohort if not curve.maturity else f"{curve.cohort} · {curve.maturity}"
+        points_by_day = {p.days: p for p in curve.points}
+        cells = []
+        for d in day_columns:
+            p = points_by_day.get(d)
+            if p is None:
+                cells.append("[dim]—[/dim]")
+            else:
+                rs = _rate_style(p.survival_rate)
+                cells.append(f"[{rs}]{p.survival_rate * 100:.1f}%[/{rs}]")
+        bars = "".join(
+            "▁▂▃▄▅▆▇█"[min(7, int(points_by_day[d].survival_rate * 8))]
+            for d in day_columns if d in points_by_day
+        )
+        n = max((p.commit_count for p in curve.points), default=0)
+        tbl.add_row(f"[{style}]{label}[/{style}]", str(n), *cells, bars)
+
+    c.print(tbl)
+    c.print(
+        "[dim]Within-repo comparison only — absolute rates are not comparable across repos.\n"
+        "Cohorts observed at a checkpoint only once they have aged past it (right-censored).\n"
+        "'bot' (dependabot/renovate) is a negative control: deterministic automation —\n"
+        "if bot churn looks AI-like, suspect the detection logic, not the bots.[/dim]"
+    )
+    c.print()
+
+
+def print_attribution_summary(
+    repo_name: str, results: list, c: Console = console
+) -> None:
+    """Summary of backfilled attribution: cohort and tool counts."""
+    from collections import Counter
+
+    c.print()
+    total = len(results)
+    c.print(Panel(f"[bold]{repo_name}[/bold] — Attribution backfill", box=box.ROUNDED))
+    if not total:
+        c.print("[yellow]No commits found.[/yellow]")
+        return
+
+    cohort_counts = Counter(a.cohort.value for _, a in results)
+    tool_counts = Counter(a.tool for _, a in results if a.tool)
+    source_counts = Counter(a.source for _, a in results if a.source != "none")
+
+    c.print(f"\n[bold]Commits:[/bold] {total}")
+    for cohort_name in ("ai-agent", "human", "bot"):
+        n = cohort_counts.get(cohort_name, 0)
+        if not n:
+            continue
+        style = COHORT_STYLES.get(cohort_name, "white")
+        pct = n / total * 100
+        c.print(f"  [{style}]{cohort_name:<10}[/{style}] {n:>6}  ({pct:.1f}%)")
+
+    if tool_counts:
+        c.print("\n[bold]By tool[/bold]")
+        for tool, n in tool_counts.most_common():
+            c.print(f"  {tool:<16} {n:>6}")
+
+    if source_counts:
+        c.print("\n[bold]Detected via[/bold]")
+        for source, n in source_counts.most_common():
+            c.print(f"  {source:<16} {n:>6}")
+    c.print()
+
+
 def print_short_fate(fate: CommitFate, c: Console = console) -> None:
     sha_short = fate.commit_sha[:7]
     score_style = _score_style(fate.survival_score)

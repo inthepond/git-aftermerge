@@ -22,14 +22,19 @@ def compute_score(commit_fate: CommitFate) -> int:
             elif hours_to_revert <= 72:
                 adjustments -= 10
 
-    # Penalty: >50% of lines modified within 7 days
-    early_modifications = sum(
-        e.lines_affected for e in commit_fate.downstream_events
-        if e.event_type == EventType.MODIFICATION
-        and (e.date - commit_fate.merged_at).days <= 7
-    )
-    if early_modifications > commit_fate.original_lines_added * 0.5:
-        adjustments -= 10
+    # Penalty: >50% of lines gone within 7 days (from the 7d checkpoint
+    # observation when available, else legacy MODIFICATION events)
+    if commit_fate.early_survival_ratio is not None:
+        if commit_fate.early_survival_ratio < 0.5:
+            adjustments -= 10
+    else:
+        early_modifications = sum(
+            e.lines_affected for e in commit_fate.downstream_events
+            if e.event_type == EventType.MODIFICATION
+            and (e.date - commit_fate.merged_at).days <= 7
+        )
+        if early_modifications > commit_fate.original_lines_added * 0.5:
+            adjustments -= 10
 
     # Bonus: survived 30+ days with zero downstream events
     if commit_fate.days_since_merge >= 30 and len(commit_fate.downstream_events) == 0:

@@ -43,6 +43,23 @@ Events:
 
 Use `--json` for machine-readable output, or `--short` for a one-liner.
 
+## See What's Already Attributed
+
+```bash
+git-aftermerge attribution
+```
+
+Works on any repo without `init`: counts commits already carrying AI traces (Claude Code's `Co-Authored-By: Claude`, Cursor/Copilot/aider identities, `Generated-By:` trailers) plus deterministic bots.
+
+## Survival Curves
+
+```bash
+git-aftermerge curve                      # by cohort: ai-agent vs human vs bot
+git-aftermerge curve --by cohort+maturity # cross-cut by age of the code touched
+```
+
+Shows the fraction of each cohort's merged lines still alive 7/30/90/180/365 days later. Compare cohorts within one repo — absolute rates are not comparable across repos.
+
 ## View Patterns
 
 ```bash
