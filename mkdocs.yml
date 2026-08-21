@@ -25,6 +25,7 @@ theme:
 
 nav:
   - Home: index.md
+  - Findings: findings.md
   - Quick Start: quickstart.md
   - CLI Reference: cli-reference.md
   - MCP Setup: mcp-setup.md
