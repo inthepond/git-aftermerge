@@ -1,0 +1,3409 @@
+[
+  {
+    "label": "aider",
+    "source_kind": "github",
+    "github": "Aider-AI/aider",
+    "commits": 263,
+    "cohorts": {
+      "human": 66,
+      "ai-agent": 197
+    },
+    "tools": {
+      "aider": 196,
+      "claude-code": 1
+    },
+    "scanned": 261,
+    "curves_by_cohort": [
+      {
+        "cohort": "ai-agent",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 185,
+            "lines": 9603
+          },
+          {
+            "days": 7,
+            "rate": 0.9347,
+            "n": 185,
+            "lines": 9603
+          },
+          {
+            "days": 30,
+            "rate": 0.8872,
+            "n": 185,
+            "lines": 9603
+          },
+          {
+            "days": 90,
+            "rate": 0.7784,
+            "n": 185,
+            "lines": 9603
+          },
+          {
+            "days": 180,
+            "rate": 0.6952,
+            "n": 154,
+            "lines": 7936
+          },
+          {
+            "days": 365,
+            "rate": 0.4781,
+            "n": 110,
+            "lines": 5139
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 62,
+            "lines": 1515
+          },
+          {
+            "days": 7,
+            "rate": 0.9765,
+            "n": 60,
+            "lines": 1448
+          },
+          {
+            "days": 30,
+            "rate": 0.8777,
+            "n": 60,
+            "lines": 1504
+          },
+          {
+            "days": 90,
+            "rate": 0.8785,
+            "n": 62,
+            "lines": 1515
+          },
+          {
+            "days": 180,
+            "rate": 0.869,
+            "n": 56,
+            "lines": 1412
+          },
+          {
+            "days": 365,
+            "rate": 0.9281,
+            "n": 34,
+            "lines": 654
+          }
+        ]
+      }
+    ],
+    "curves_by_cohort_maturity": [
+      {
+        "cohort": "ai-agent",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 155,
+            "lines": 6885
+          },
+          {
+            "days": 7,
+            "rate": 0.9155,
+            "n": 155,
+            "lines": 6885
+          },
+          {
+            "days": 30,
+            "rate": 0.8665,
+            "n": 155,
+            "lines": 6885
+          },
+          {
+            "days": 90,
+            "rate": 0.7296,
+            "n": 155,
+            "lines": 6885
+          },
+          {
+            "days": 180,
+            "rate": 0.6106,
+            "n": 128,
+            "lines": 5278
+          },
+          {
+            "days": 365,
+            "rate": 0.3768,
+            "n": 97,
+            "lines": 4100
+          }
+        ]
+      },
+      {
+        "cohort": "ai-agent",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 30,
+            "lines": 2718
+          },
+          {
+            "days": 7,
+            "rate": 0.9834,
+            "n": 30,
+            "lines": 2718
+          },
+          {
+            "days": 30,
+            "rate": 0.9397,
+            "n": 30,
+            "lines": 2718
+          },
+          {
+            "days": 90,
+            "rate": 0.9021,
+            "n": 30,
+            "lines": 2718
+          },
+          {
+            "days": 180,
+            "rate": 0.8631,
+            "n": 26,
+            "lines": 2658
+          },
+          {
+            "days": 365,
+            "rate": 0.8778,
+            "n": 13,
+            "lines": 1039
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 51,
+            "lines": 1332
+          },
+          {
+            "days": 7,
+            "rate": 0.9796,
+            "n": 50,
+            "lines": 1274
+          },
+          {
+            "days": 30,
+            "rate": 0.8679,
+            "n": 51,
+            "lines": 1332
+          },
+          {
+            "days": 90,
+            "rate": 0.8679,
+            "n": 51,
+            "lines": 1332
+          },
+          {
+            "days": 180,
+            "rate": 0.8562,
+            "n": 47,
+            "lines": 1231
+          },
+          {
+            "days": 365,
+            "rate": 0.9233,
+            "n": 32,
+            "lines": 613
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 11,
+            "lines": 183
+          },
+          {
+            "days": 7,
+            "rate": 0.954,
+            "n": 10,
+            "lines": 174
+          },
+          {
+            "days": 30,
+            "rate": 0.9535,
+            "n": 9,
+            "lines": 172
+          },
+          {
+            "days": 90,
+            "rate": 0.9563,
+            "n": 11,
+            "lines": 183
+          },
+          {
+            "days": 180,
+            "rate": 0.9558,
+            "n": 9,
+            "lines": 181
+          },
+          {
+            "days": 365,
+            "rate": 1.0,
+            "n": 2,
+            "lines": 41
+          }
+        ]
+      }
+    ],
+    "maturity_mix": {
+      "new": 206,
+      "young": 41
+    },
+    "seconds": 87.7
+  },
+  {
+    "label": "assistant-ui",
+    "source_kind": "github",
+    "github": "assistant-ui/assistant-ui",
+    "commits": 2806,
+    "cohorts": {
+      "ai-agent": 267,
+      "bot": 214,
+      "human": 2325
+    },
+    "tools": {
+      "claude-code": 247,
+      "bot": 214,
+      "cursor": 5,
+      "github-copilot": 13,
+      "devin": 2
+    },
+    "scanned": 2761,
+    "curves_by_cohort": [
+      {
+        "cohort": "ai-agent",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 262,
+            "lines": 175689
+          },
+          {
+            "days": 7,
+            "rate": 0.7189,
+            "n": 245,
+            "lines": 168597
+          },
+          {
+            "days": 30,
+            "rate": 0.3534,
+            "n": 140,
+            "lines": 143116
+          },
+          {
+            "days": 90,
+            "rate": 0.1999,
+            "n": 86,
+            "lines": 92172
+          },
+          {
+            "days": 180,
+            "rate": 0.0275,
+            "n": 41,
+            "lines": 64925
+          },
+          {
+            "days": 365,
+            "rate": 0.1668,
+            "n": 4,
+            "lines": 1745
+          }
+        ]
+      },
+      {
+        "cohort": "bot",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 177,
+            "lines": 24020
+          },
+          {
+            "days": 7,
+            "rate": 0.8346,
+            "n": 174,
+            "lines": 22679
+          },
+          {
+            "days": 30,
+            "rate": 0.7573,
+            "n": 159,
+            "lines": 18717
+          },
+          {
+            "days": 90,
+            "rate": 0.7173,
+            "n": 138,
+            "lines": 12555
+          },
+          {
+            "days": 180,
+            "rate": 0.6591,
+            "n": 110,
+            "lines": 6544
+          },
+          {
+            "days": 365,
+            "rate": 0.659,
+            "n": 22,
+            "lines": 1000
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 2291,
+            "lines": 1021985
+          },
+          {
+            "days": 7,
+            "rate": 0.8514,
+            "n": 2092,
+            "lines": 971034
+          },
+          {
+            "days": 30,
+            "rate": 0.6772,
+            "n": 1693,
+            "lines": 820101
+          },
+          {
+            "days": 90,
+            "rate": 0.5081,
+            "n": 1085,
+            "lines": 533632
+          },
+          {
+            "days": 180,
+            "rate": 0.2833,
+            "n": 685,
+            "lines": 313223
+          },
+          {
+            "days": 365,
+            "rate": 0.1136,
+            "n": 112,
+            "lines": 58950
+          }
+        ]
+      }
+    ],
+    "curves_by_cohort_maturity": [
+      {
+        "cohort": "ai-agent",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 236,
+            "lines": 167874
+          },
+          {
+            "days": 7,
+            "rate": 0.707,
+            "n": 221,
+            "lines": 161056
+          },
+          {
+            "days": 30,
+            "rate": 0.3365,
+            "n": 128,
+            "lines": 136536
+          },
+          {
+            "days": 90,
+            "rate": 0.1899,
+            "n": 78,
+            "lines": 90442
+          },
+          {
+            "days": 180,
+            "rate": 0.0167,
+            "n": 34,
+            "lines": 63233
+          },
+          {
+            "days": 365,
+            "rate": 0.0,
+            "n": 1,
+            "lines": 135
+          }
+        ]
+      },
+      {
+        "cohort": "ai-agent",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 26,
+            "lines": 7815
+          },
+          {
+            "days": 7,
+            "rate": 0.9729,
+            "n": 24,
+            "lines": 7541
+          },
+          {
+            "days": 30,
+            "rate": 0.705,
+            "n": 12,
+            "lines": 6580
+          },
+          {
+            "days": 90,
+            "rate": 0.7214,
+            "n": 8,
+            "lines": 1730
+          },
+          {
+            "days": 180,
+            "rate": 0.4303,
+            "n": 7,
+            "lines": 1692
+          },
+          {
+            "days": 365,
+            "rate": 0.1807,
+            "n": 3,
+            "lines": 1610
+          }
+        ]
+      },
+      {
+        "cohort": "bot",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 177,
+            "lines": 24020
+          },
+          {
+            "days": 7,
+            "rate": 0.8346,
+            "n": 174,
+            "lines": 22679
+          },
+          {
+            "days": 30,
+            "rate": 0.7573,
+            "n": 159,
+            "lines": 18717
+          },
+          {
+            "days": 90,
+            "rate": 0.7173,
+            "n": 138,
+            "lines": 12555
+          },
+          {
+            "days": 180,
+            "rate": 0.6591,
+            "n": 110,
+            "lines": 6544
+          },
+          {
+            "days": 365,
+            "rate": 0.659,
+            "n": 22,
+            "lines": 1000
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "mature",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 1,
+            "lines": 159
+          },
+          {
+            "days": 7,
+            "rate": 0.9937,
+            "n": 1,
+            "lines": 159
+          },
+          {
+            "days": 30,
+            "rate": 0.9937,
+            "n": 1,
+            "lines": 159
+          },
+          {
+            "days": 90,
+            "rate": 0.9623,
+            "n": 1,
+            "lines": 159
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 2041,
+            "lines": 982049
+          },
+          {
+            "days": 7,
+            "rate": 0.8534,
+            "n": 1859,
+            "lines": 932542
+          },
+          {
+            "days": 30,
+            "rate": 0.6751,
+            "n": 1496,
+            "lines": 788480
+          },
+          {
+            "days": 90,
+            "rate": 0.5042,
+            "n": 947,
+            "lines": 507952
+          },
+          {
+            "days": 180,
+            "rate": 0.2885,
+            "n": 593,
+            "lines": 296076
+          },
+          {
+            "days": 365,
+            "rate": 0.1084,
+            "n": 94,
+            "lines": 56023
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 249,
+            "lines": 39777
+          },
+          {
+            "days": 7,
+            "rate": 0.8034,
+            "n": 232,
+            "lines": 38333
+          },
+          {
+            "days": 30,
+            "rate": 0.7283,
+            "n": 196,
+            "lines": 31462
+          },
+          {
+            "days": 90,
+            "rate": 0.5842,
+            "n": 137,
+            "lines": 25521
+          },
+          {
+            "days": 180,
+            "rate": 0.1941,
+            "n": 92,
+            "lines": 17147
+          },
+          {
+            "days": 365,
+            "rate": 0.2125,
+            "n": 18,
+            "lines": 2927
+          }
+        ]
+      }
+    ],
+    "maturity_mix": {
+      "new": 2454,
+      "young": 275,
+      "mature": 1
+    },
+    "seconds": 3206.8
+  },
+  {
+    "label": "browser-use",
+    "source_kind": "github",
+    "github": "browser-use/browser-use",
+    "commits": 2179,
+    "cohorts": {
+      "human": 2025,
+      "ai-agent": 154
+    },
+    "tools": {
+      "claude-code": 106,
+      "cursor": 48
+    },
+    "scanned": 2156,
+    "curves_by_cohort": [
+      {
+        "cohort": "ai-agent",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 152,
+            "lines": 14509
+          },
+          {
+            "days": 7,
+            "rate": 0.6252,
+            "n": 141,
+            "lines": 12848
+          },
+          {
+            "days": 30,
+            "rate": 0.6064,
+            "n": 146,
+            "lines": 14446
+          },
+          {
+            "days": 90,
+            "rate": 0.3651,
+            "n": 138,
+            "lines": 14159
+          },
+          {
+            "days": 180,
+            "rate": 0.1672,
+            "n": 116,
+            "lines": 11666
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 1896,
+            "lines": 126800
+          },
+          {
+            "days": 7,
+            "rate": 0.587,
+            "n": 1774,
+            "lines": 117206
+          },
+          {
+            "days": 30,
+            "rate": 0.5064,
+            "n": 1793,
+            "lines": 122971
+          },
+          {
+            "days": 90,
+            "rate": 0.5584,
+            "n": 1315,
+            "lines": 95575
+          },
+          {
+            "days": 180,
+            "rate": 0.5131,
+            "n": 981,
+            "lines": 68657
+          }
+        ]
+      }
+    ],
+    "curves_by_cohort_maturity": [
+      {
+        "cohort": "ai-agent",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 141,
+            "lines": 13889
+          },
+          {
+            "days": 7,
+            "rate": 0.6104,
+            "n": 131,
+            "lines": 12246
+          },
+          {
+            "days": 30,
+            "rate": 0.5933,
+            "n": 137,
+            "lines": 13843
+          },
+          {
+            "days": 90,
+            "rate": 0.3458,
+            "n": 130,
+            "lines": 13574
+          },
+          {
+            "days": 180,
+            "rate": 0.1337,
+            "n": 111,
+            "lines": 11086
+          }
+        ]
+      },
+      {
+        "cohort": "ai-agent",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 11,
+            "lines": 620
+          },
+          {
+            "days": 7,
+            "rate": 0.9269,
+            "n": 10,
+            "lines": 602
+          },
+          {
+            "days": 30,
+            "rate": 0.9071,
+            "n": 9,
+            "lines": 603
+          },
+          {
+            "days": 90,
+            "rate": 0.8137,
+            "n": 8,
+            "lines": 585
+          },
+          {
+            "days": 180,
+            "rate": 0.8086,
+            "n": 5,
+            "lines": 580
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 1773,
+            "lines": 121727
+          },
+          {
+            "days": 7,
+            "rate": 0.5757,
+            "n": 1670,
+            "lines": 113033
+          },
+          {
+            "days": 30,
+            "rate": 0.4914,
+            "n": 1688,
+            "lines": 118270
+          },
+          {
+            "days": 90,
+            "rate": 0.5478,
+            "n": 1220,
+            "lines": 91727
+          },
+          {
+            "days": 180,
+            "rate": 0.5036,
+            "n": 918,
+            "lines": 65951
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 123,
+            "lines": 5073
+          },
+          {
+            "days": 7,
+            "rate": 0.8936,
+            "n": 104,
+            "lines": 4173
+          },
+          {
+            "days": 30,
+            "rate": 0.8826,
+            "n": 105,
+            "lines": 4701
+          },
+          {
+            "days": 90,
+            "rate": 0.8116,
+            "n": 95,
+            "lines": 3848
+          },
+          {
+            "days": 180,
+            "rate": 0.7443,
+            "n": 63,
+            "lines": 2706
+          }
+        ]
+      }
+    ],
+    "maturity_mix": {
+      "new": 1914,
+      "young": 134
+    },
+    "seconds": 529.7
+  },
+  {
+    "label": "claude-code-router",
+    "source_kind": "github",
+    "github": "musistudio/claude-code-router",
+    "commits": 683,
+    "cohorts": {
+      "human": 674,
+      "ai-agent": 9
+    },
+    "tools": {
+      "claude-code": 9
+    },
+    "skipped": "cohort too small (ai=9, human=674)"
+  },
+  {
+    "label": "crush",
+    "source_kind": "github",
+    "github": "charmbracelet/crush",
+    "commits": 3719,
+    "cohorts": {
+      "human": 3459,
+      "ai-agent": 161,
+      "bot": 99
+    },
+    "tools": {
+      "claude-code": 12,
+      "bot": 99,
+      "crush": 140,
+      "github-copilot": 8,
+      "opencode": 1
+    },
+    "scanned": 3506,
+    "curves_by_cohort": [
+      {
+        "cohort": "ai-agent",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 160,
+            "lines": 32616
+          },
+          {
+            "days": 7,
+            "rate": 0.8706,
+            "n": 157,
+            "lines": 32233
+          },
+          {
+            "days": 30,
+            "rate": 0.8878,
+            "n": 115,
+            "lines": 26057
+          },
+          {
+            "days": 90,
+            "rate": 0.8684,
+            "n": 70,
+            "lines": 17900
+          },
+          {
+            "days": 180,
+            "rate": 0.2719,
+            "n": 26,
+            "lines": 3148
+          },
+          {
+            "days": 365,
+            "rate": 0.0,
+            "n": 7,
+            "lines": 414
+          }
+        ]
+      },
+      {
+        "cohort": "bot",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 99,
+            "lines": 1395
+          },
+          {
+            "days": 7,
+            "rate": 0.7842,
+            "n": 99,
+            "lines": 1395
+          },
+          {
+            "days": 30,
+            "rate": 0.3673,
+            "n": 95,
+            "lines": 1296
+          },
+          {
+            "days": 90,
+            "rate": 0.1927,
+            "n": 81,
+            "lines": 1043
+          },
+          {
+            "days": 180,
+            "rate": 0.1109,
+            "n": 59,
+            "lines": 649
+          },
+          {
+            "days": 365,
+            "rate": 0.1838,
+            "n": 21,
+            "lines": 136
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 3132,
+            "lines": 1593551
+          },
+          {
+            "days": 7,
+            "rate": 0.9489,
+            "n": 2985,
+            "lines": 1559847
+          },
+          {
+            "days": 30,
+            "rate": 0.1303,
+            "n": 2943,
+            "lines": 1565200
+          },
+          {
+            "days": 90,
+            "rate": 0.0946,
+            "n": 2692,
+            "lines": 1546450
+          },
+          {
+            "days": 180,
+            "rate": 0.0492,
+            "n": 2193,
+            "lines": 1492810
+          },
+          {
+            "days": 365,
+            "rate": 0.0062,
+            "n": 1135,
+            "lines": 1415107
+          }
+        ]
+      }
+    ],
+    "curves_by_cohort_maturity": [
+      {
+        "cohort": "ai-agent",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 152,
+            "lines": 31739
+          },
+          {
+            "days": 7,
+            "rate": 0.8688,
+            "n": 149,
+            "lines": 31356
+          },
+          {
+            "days": 30,
+            "rate": 0.8885,
+            "n": 109,
+            "lines": 25445
+          },
+          {
+            "days": 90,
+            "rate": 0.8699,
+            "n": 65,
+            "lines": 17363
+          },
+          {
+            "days": 180,
+            "rate": 0.2479,
+            "n": 22,
+            "lines": 2860
+          },
+          {
+            "days": 365,
+            "rate": 0.0,
+            "n": 7,
+            "lines": 414
+          }
+        ]
+      },
+      {
+        "cohort": "ai-agent",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 8,
+            "lines": 877
+          },
+          {
+            "days": 7,
+            "rate": 0.9373,
+            "n": 8,
+            "lines": 877
+          },
+          {
+            "days": 30,
+            "rate": 0.8595,
+            "n": 6,
+            "lines": 612
+          },
+          {
+            "days": 90,
+            "rate": 0.8212,
+            "n": 5,
+            "lines": 537
+          },
+          {
+            "days": 180,
+            "rate": 0.5104,
+            "n": 4,
+            "lines": 288
+          }
+        ]
+      },
+      {
+        "cohort": "bot",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 97,
+            "lines": 1389
+          },
+          {
+            "days": 7,
+            "rate": 0.7833,
+            "n": 97,
+            "lines": 1389
+          },
+          {
+            "days": 30,
+            "rate": 0.3674,
+            "n": 93,
+            "lines": 1290
+          },
+          {
+            "days": 90,
+            "rate": 0.1938,
+            "n": 79,
+            "lines": 1037
+          },
+          {
+            "days": 180,
+            "rate": 0.1113,
+            "n": 58,
+            "lines": 647
+          },
+          {
+            "days": 365,
+            "rate": 0.1866,
+            "n": 20,
+            "lines": 134
+          }
+        ]
+      },
+      {
+        "cohort": "bot",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 2,
+            "lines": 6
+          },
+          {
+            "days": 7,
+            "rate": 1.0,
+            "n": 2,
+            "lines": 6
+          },
+          {
+            "days": 30,
+            "rate": 0.3333,
+            "n": 2,
+            "lines": 6
+          },
+          {
+            "days": 90,
+            "rate": 0.0,
+            "n": 2,
+            "lines": 6
+          },
+          {
+            "days": 180,
+            "rate": 0.0,
+            "n": 1,
+            "lines": 2
+          },
+          {
+            "days": 365,
+            "rate": 0.0,
+            "n": 1,
+            "lines": 2
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 2957,
+            "lines": 1581326
+          },
+          {
+            "days": 7,
+            "rate": 0.9501,
+            "n": 2817,
+            "lines": 1548590
+          },
+          {
+            "days": 30,
+            "rate": 0.126,
+            "n": 2783,
+            "lines": 1554452
+          },
+          {
+            "days": 90,
+            "rate": 0.0935,
+            "n": 2572,
+            "lines": 1541495
+          },
+          {
+            "days": 180,
+            "rate": 0.0489,
+            "n": 2133,
+            "lines": 1489656
+          },
+          {
+            "days": 365,
+            "rate": 0.0062,
+            "n": 1122,
+            "lines": 1413074
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 175,
+            "lines": 12225
+          },
+          {
+            "days": 7,
+            "rate": 0.7904,
+            "n": 168,
+            "lines": 11257
+          },
+          {
+            "days": 30,
+            "rate": 0.7507,
+            "n": 160,
+            "lines": 10748
+          },
+          {
+            "days": 90,
+            "rate": 0.4212,
+            "n": 120,
+            "lines": 4955
+          },
+          {
+            "days": 180,
+            "rate": 0.1978,
+            "n": 60,
+            "lines": 3154
+          },
+          {
+            "days": 365,
+            "rate": 0.0157,
+            "n": 13,
+            "lines": 2033
+          }
+        ]
+      }
+    ],
+    "maturity_mix": {
+      "young": 185,
+      "new": 3206
+    },
+    "seconds": 2029.8
+  },
+  {
+    "label": "gemini-cli",
+    "source_kind": "github",
+    "github": "google-gemini/gemini-cli",
+    "commits": 2912,
+    "cohorts": {
+      "human": 2694,
+      "ai-agent": 216,
+      "bot": 2
+    },
+    "tools": {
+      "gemini": 216,
+      "bot": 2
+    },
+    "scanned": 2902,
+    "curves_by_cohort": [
+      {
+        "cohort": "ai-agent",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 216,
+            "lines": 43833
+          },
+          {
+            "days": 7,
+            "rate": 0.8639,
+            "n": 212,
+            "lines": 43697
+          },
+          {
+            "days": 30,
+            "rate": 0.7123,
+            "n": 204,
+            "lines": 40866
+          },
+          {
+            "days": 90,
+            "rate": 0.6693,
+            "n": 191,
+            "lines": 39588
+          },
+          {
+            "days": 180,
+            "rate": 0.7003,
+            "n": 65,
+            "lines": 16588
+          }
+        ]
+      },
+      {
+        "cohort": "bot",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 2,
+            "lines": 152
+          },
+          {
+            "days": 7,
+            "rate": 0.0461,
+            "n": 2,
+            "lines": 152
+          },
+          {
+            "days": 30,
+            "rate": 0.0263,
+            "n": 2,
+            "lines": 152
+          },
+          {
+            "days": 90,
+            "rate": 0.0263,
+            "n": 2,
+            "lines": 152
+          },
+          {
+            "days": 180,
+            "rate": 0.0,
+            "n": 2,
+            "lines": 152
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 2637,
+            "lines": 1419219
+          },
+          {
+            "days": 7,
+            "rate": 0.9714,
+            "n": 2624,
+            "lines": 1418298
+          },
+          {
+            "days": 30,
+            "rate": 0.9376,
+            "n": 2574,
+            "lines": 1397221
+          },
+          {
+            "days": 90,
+            "rate": 0.9147,
+            "n": 2502,
+            "lines": 1376381
+          },
+          {
+            "days": 180,
+            "rate": 0.6948,
+            "n": 1207,
+            "lines": 251599
+          }
+        ]
+      }
+    ],
+    "curves_by_cohort_maturity": [
+      {
+        "cohort": "ai-agent",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 195,
+            "lines": 42081
+          },
+          {
+            "days": 7,
+            "rate": 0.8611,
+            "n": 194,
+            "lines": 42003
+          },
+          {
+            "days": 30,
+            "rate": 0.7088,
+            "n": 186,
+            "lines": 39172
+          },
+          {
+            "days": 90,
+            "rate": 0.6698,
+            "n": 177,
+            "lines": 38525
+          },
+          {
+            "days": 180,
+            "rate": 0.711,
+            "n": 57,
+            "lines": 16089
+          }
+        ]
+      },
+      {
+        "cohort": "ai-agent",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 21,
+            "lines": 1752
+          },
+          {
+            "days": 7,
+            "rate": 0.9321,
+            "n": 18,
+            "lines": 1694
+          },
+          {
+            "days": 30,
+            "rate": 0.7916,
+            "n": 18,
+            "lines": 1694
+          },
+          {
+            "days": 90,
+            "rate": 0.6519,
+            "n": 14,
+            "lines": 1063
+          },
+          {
+            "days": 180,
+            "rate": 0.3547,
+            "n": 8,
+            "lines": 499
+          }
+        ]
+      },
+      {
+        "cohort": "bot",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 2,
+            "lines": 152
+          },
+          {
+            "days": 7,
+            "rate": 0.0461,
+            "n": 2,
+            "lines": 152
+          },
+          {
+            "days": 30,
+            "rate": 0.0263,
+            "n": 2,
+            "lines": 152
+          },
+          {
+            "days": 90,
+            "rate": 0.0263,
+            "n": 2,
+            "lines": 152
+          },
+          {
+            "days": 180,
+            "rate": 0.0,
+            "n": 2,
+            "lines": 152
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 2380,
+            "lines": 1398221
+          },
+          {
+            "days": 7,
+            "rate": 0.9712,
+            "n": 2376,
+            "lines": 1397461
+          },
+          {
+            "days": 30,
+            "rate": 0.9375,
+            "n": 2339,
+            "lines": 1379171
+          },
+          {
+            "days": 90,
+            "rate": 0.915,
+            "n": 2286,
+            "lines": 1360417
+          },
+          {
+            "days": 180,
+            "rate": 0.691,
+            "n": 1107,
+            "lines": 244055
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 257,
+            "lines": 20998
+          },
+          {
+            "days": 7,
+            "rate": 0.9845,
+            "n": 248,
+            "lines": 20837
+          },
+          {
+            "days": 30,
+            "rate": 0.9477,
+            "n": 235,
+            "lines": 18050
+          },
+          {
+            "days": 90,
+            "rate": 0.8919,
+            "n": 216,
+            "lines": 15964
+          },
+          {
+            "days": 180,
+            "rate": 0.8184,
+            "n": 100,
+            "lines": 7544
+          }
+        ]
+      }
+    ],
+    "maturity_mix": {
+      "new": 2577,
+      "young": 278
+    },
+    "seconds": 3932.0
+  },
+  {
+    "label": "ghostty",
+    "source_kind": "github",
+    "github": "ghostty-org/ghostty",
+    "commits": 3526,
+    "cohorts": {
+      "human": 3335,
+      "bot": 117,
+      "ai-agent": 74
+    },
+    "tools": {
+      "bot": 117,
+      "claude-code": 64,
+      "amp": 8,
+      "codex": 1,
+      "github-copilot": 1
+    },
+    "scanned": 3511,
+    "curves_by_cohort": [
+      {
+        "cohort": "ai-agent",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 72,
+            "lines": 3584
+          },
+          {
+            "days": 7,
+            "rate": 0.8232,
+            "n": 60,
+            "lines": 3207
+          },
+          {
+            "days": 30,
+            "rate": 0.7395,
+            "n": 62,
+            "lines": 2960
+          },
+          {
+            "days": 90,
+            "rate": 0.6621,
+            "n": 54,
+            "lines": 2338
+          },
+          {
+            "days": 180,
+            "rate": 0.5652,
+            "n": 5,
+            "lines": 92
+          }
+        ]
+      },
+      {
+        "cohort": "bot",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 117,
+            "lines": 1676
+          },
+          {
+            "days": 7,
+            "rate": 0.756,
+            "n": 114,
+            "lines": 1590
+          },
+          {
+            "days": 30,
+            "rate": 0.4396,
+            "n": 115,
+            "lines": 1631
+          },
+          {
+            "days": 90,
+            "rate": 0.1456,
+            "n": 96,
+            "lines": 1181
+          },
+          {
+            "days": 180,
+            "rate": 0.0261,
+            "n": 64,
+            "lines": 728
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 3230,
+            "lines": 1846270
+          },
+          {
+            "days": 7,
+            "rate": 0.1853,
+            "n": 2966,
+            "lines": 1814067
+          },
+          {
+            "days": 30,
+            "rate": 0.1502,
+            "n": 2722,
+            "lines": 1736936
+          },
+          {
+            "days": 90,
+            "rate": 0.1268,
+            "n": 2483,
+            "lines": 1695489
+          },
+          {
+            "days": 180,
+            "rate": 0.7053,
+            "n": 1549,
+            "lines": 170354
+          }
+        ]
+      }
+    ],
+    "curves_by_cohort_maturity": [
+      {
+        "cohort": "ai-agent",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 52,
+            "lines": 2459
+          },
+          {
+            "days": 7,
+            "rate": 0.7579,
+            "n": 43,
+            "lines": 2251
+          },
+          {
+            "days": 30,
+            "rate": 0.6558,
+            "n": 43,
+            "lines": 1865
+          },
+          {
+            "days": 90,
+            "rate": 0.5955,
+            "n": 37,
+            "lines": 1612
+          },
+          {
+            "days": 180,
+            "rate": 0.5652,
+            "n": 5,
+            "lines": 92
+          }
+        ]
+      },
+      {
+        "cohort": "ai-agent",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 20,
+            "lines": 1125
+          },
+          {
+            "days": 7,
+            "rate": 0.977,
+            "n": 17,
+            "lines": 956
+          },
+          {
+            "days": 30,
+            "rate": 0.8822,
+            "n": 19,
+            "lines": 1095
+          },
+          {
+            "days": 90,
+            "rate": 0.8099,
+            "n": 17,
+            "lines": 726
+          }
+        ]
+      },
+      {
+        "cohort": "bot",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 112,
+            "lines": 1665
+          },
+          {
+            "days": 7,
+            "rate": 0.7543,
+            "n": 109,
+            "lines": 1579
+          },
+          {
+            "days": 30,
+            "rate": 0.437,
+            "n": 110,
+            "lines": 1620
+          },
+          {
+            "days": 90,
+            "rate": 0.1409,
+            "n": 92,
+            "lines": 1171
+          },
+          {
+            "days": 180,
+            "rate": 0.0235,
+            "n": 61,
+            "lines": 723
+          }
+        ]
+      },
+      {
+        "cohort": "bot",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 5,
+            "lines": 11
+          },
+          {
+            "days": 7,
+            "rate": 1.0,
+            "n": 5,
+            "lines": 11
+          },
+          {
+            "days": 30,
+            "rate": 0.8182,
+            "n": 5,
+            "lines": 11
+          },
+          {
+            "days": 90,
+            "rate": 0.7,
+            "n": 4,
+            "lines": 10
+          },
+          {
+            "days": 180,
+            "rate": 0.4,
+            "n": 3,
+            "lines": 5
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "mature",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 22,
+            "lines": 45405
+          },
+          {
+            "days": 7,
+            "rate": 0.9998,
+            "n": 21,
+            "lines": 45400
+          },
+          {
+            "days": 30,
+            "rate": 0.9786,
+            "n": 19,
+            "lines": 45382
+          },
+          {
+            "days": 90,
+            "rate": 0.9778,
+            "n": 20,
+            "lines": 45398
+          },
+          {
+            "days": 180,
+            "rate": 0.9023,
+            "n": 12,
+            "lines": 307
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 2932,
+            "lines": 1775803
+          },
+          {
+            "days": 7,
+            "rate": 0.1577,
+            "n": 2701,
+            "lines": 1751762
+          },
+          {
+            "days": 30,
+            "rate": 0.1214,
+            "n": 2479,
+            "lines": 1674835
+          },
+          {
+            "days": 90,
+            "rate": 0.1006,
+            "n": 2276,
+            "lines": 1635897
+          },
+          {
+            "days": 180,
+            "rate": 0.7326,
+            "n": 1428,
+            "lines": 158857
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 276,
+            "lines": 25062
+          },
+          {
+            "days": 7,
+            "rate": 0.8529,
+            "n": 244,
+            "lines": 16905
+          },
+          {
+            "days": 30,
+            "rate": 0.7846,
+            "n": 224,
+            "lines": 16719
+          },
+          {
+            "days": 90,
+            "rate": 0.4171,
+            "n": 187,
+            "lines": 14194
+          },
+          {
+            "days": 180,
+            "rate": 0.3134,
+            "n": 109,
+            "lines": 11190
+          }
+        ]
+      }
+    ],
+    "maturity_mix": {
+      "new": 3096,
+      "young": 301,
+      "mature": 22
+    },
+    "seconds": 2016.9
+  },
+  {
+    "label": "lemmy",
+    "source_kind": "github",
+    "github": "badlogic/lemmy",
+    "commits": 324,
+    "cohorts": {
+      "human": 124,
+      "ai-agent": 200
+    },
+    "tools": {
+      "claude-code": 200
+    },
+    "scanned": 324,
+    "curves_by_cohort": [
+      {
+        "cohort": "ai-agent",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 199,
+            "lines": 80442
+          },
+          {
+            "days": 7,
+            "rate": 0.4624,
+            "n": 198,
+            "lines": 80441
+          },
+          {
+            "days": 30,
+            "rate": 0.2528,
+            "n": 198,
+            "lines": 80441
+          },
+          {
+            "days": 90,
+            "rate": 0.2332,
+            "n": 199,
+            "lines": 80442
+          },
+          {
+            "days": 180,
+            "rate": 0.2332,
+            "n": 199,
+            "lines": 80442
+          },
+          {
+            "days": 365,
+            "rate": 0.2332,
+            "n": 199,
+            "lines": 80442
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 117,
+            "lines": 141076
+          },
+          {
+            "days": 7,
+            "rate": 0.869,
+            "n": 115,
+            "lines": 140633
+          },
+          {
+            "days": 30,
+            "rate": 0.1385,
+            "n": 117,
+            "lines": 141076
+          },
+          {
+            "days": 90,
+            "rate": 0.1344,
+            "n": 117,
+            "lines": 141076
+          },
+          {
+            "days": 180,
+            "rate": 0.1344,
+            "n": 117,
+            "lines": 141076
+          },
+          {
+            "days": 365,
+            "rate": 0.1344,
+            "n": 117,
+            "lines": 141076
+          }
+        ]
+      }
+    ],
+    "curves_by_cohort_maturity": [
+      {
+        "cohort": "ai-agent",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 198,
+            "lines": 80437
+          },
+          {
+            "days": 7,
+            "rate": 0.4624,
+            "n": 197,
+            "lines": 80436
+          },
+          {
+            "days": 30,
+            "rate": 0.2528,
+            "n": 197,
+            "lines": 80436
+          },
+          {
+            "days": 90,
+            "rate": 0.2332,
+            "n": 198,
+            "lines": 80437
+          },
+          {
+            "days": 180,
+            "rate": 0.2332,
+            "n": 198,
+            "lines": 80437
+          },
+          {
+            "days": 365,
+            "rate": 0.2332,
+            "n": 198,
+            "lines": 80437
+          }
+        ]
+      },
+      {
+        "cohort": "ai-agent",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 1,
+            "lines": 5
+          },
+          {
+            "days": 7,
+            "rate": 0.4,
+            "n": 1,
+            "lines": 5
+          },
+          {
+            "days": 30,
+            "rate": 0.4,
+            "n": 1,
+            "lines": 5
+          },
+          {
+            "days": 90,
+            "rate": 0.4,
+            "n": 1,
+            "lines": 5
+          },
+          {
+            "days": 180,
+            "rate": 0.4,
+            "n": 1,
+            "lines": 5
+          },
+          {
+            "days": 365,
+            "rate": 0.4,
+            "n": 1,
+            "lines": 5
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 107,
+            "lines": 140588
+          },
+          {
+            "days": 7,
+            "rate": 0.8689,
+            "n": 105,
+            "lines": 140145
+          },
+          {
+            "days": 30,
+            "rate": 0.1359,
+            "n": 107,
+            "lines": 140588
+          },
+          {
+            "days": 90,
+            "rate": 0.1318,
+            "n": 107,
+            "lines": 140588
+          },
+          {
+            "days": 180,
+            "rate": 0.1318,
+            "n": 107,
+            "lines": 140588
+          },
+          {
+            "days": 365,
+            "rate": 0.1318,
+            "n": 107,
+            "lines": 140588
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 10,
+            "lines": 488
+          },
+          {
+            "days": 7,
+            "rate": 0.9098,
+            "n": 10,
+            "lines": 488
+          },
+          {
+            "days": 30,
+            "rate": 0.8852,
+            "n": 10,
+            "lines": 488
+          },
+          {
+            "days": 90,
+            "rate": 0.8852,
+            "n": 10,
+            "lines": 488
+          },
+          {
+            "days": 180,
+            "rate": 0.8852,
+            "n": 10,
+            "lines": 488
+          },
+          {
+            "days": 365,
+            "rate": 0.8852,
+            "n": 10,
+            "lines": 488
+          }
+        ]
+      }
+    ],
+    "maturity_mix": {
+      "new": 305,
+      "young": 11
+    },
+    "seconds": 49.5
+  },
+  {
+    "label": "librechat",
+    "source_kind": "github",
+    "github": "danny-avila/LibreChat",
+    "commits": 2404,
+    "cohorts": {
+      "human": 2224,
+      "ai-agent": 60,
+      "bot": 120
+    },
+    "tools": {
+      "claude-code": 44,
+      "bot": 120,
+      "github-copilot": 15,
+      "cursor": 1
+    },
+    "scanned": 2401,
+    "curves_by_cohort": [
+      {
+        "cohort": "ai-agent",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 60,
+            "lines": 58095
+          },
+          {
+            "days": 7,
+            "rate": 0.9686,
+            "n": 48,
+            "lines": 26372
+          },
+          {
+            "days": 30,
+            "rate": 0.9528,
+            "n": 43,
+            "lines": 22203
+          },
+          {
+            "days": 90,
+            "rate": 0.912,
+            "n": 30,
+            "lines": 18015
+          },
+          {
+            "days": 180,
+            "rate": 0.7975,
+            "n": 20,
+            "lines": 8219
+          },
+          {
+            "days": 365,
+            "rate": 0.3098,
+            "n": 4,
+            "lines": 807
+          }
+        ]
+      },
+      {
+        "cohort": "bot",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 113,
+            "lines": 22711
+          },
+          {
+            "days": 7,
+            "rate": 0.9968,
+            "n": 112,
+            "lines": 16251
+          },
+          {
+            "days": 30,
+            "rate": 0.9871,
+            "n": 112,
+            "lines": 16251
+          },
+          {
+            "days": 90,
+            "rate": 0.9599,
+            "n": 112,
+            "lines": 16251
+          },
+          {
+            "days": 180,
+            "rate": 0.9254,
+            "n": 95,
+            "lines": 11330
+          },
+          {
+            "days": 365,
+            "rate": 0.851,
+            "n": 30,
+            "lines": 4710
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 2204,
+            "lines": 1038578
+          },
+          {
+            "days": 7,
+            "rate": 0.9463,
+            "n": 2094,
+            "lines": 971575
+          },
+          {
+            "days": 30,
+            "rate": 0.9065,
+            "n": 1905,
+            "lines": 775764
+          },
+          {
+            "days": 90,
+            "rate": 0.8223,
+            "n": 1434,
+            "lines": 551927
+          },
+          {
+            "days": 180,
+            "rate": 0.6939,
+            "n": 948,
+            "lines": 323023
+          },
+          {
+            "days": 365,
+            "rate": 0.5402,
+            "n": 309,
+            "lines": 109612
+          }
+        ]
+      }
+    ],
+    "curves_by_cohort_maturity": [
+      {
+        "cohort": "ai-agent",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 54,
+            "lines": 56004
+          },
+          {
+            "days": 7,
+            "rate": 0.9666,
+            "n": 42,
+            "lines": 24281
+          },
+          {
+            "days": 30,
+            "rate": 0.9504,
+            "n": 37,
+            "lines": 20112
+          },
+          {
+            "days": 90,
+            "rate": 0.9089,
+            "n": 24,
+            "lines": 15924
+          },
+          {
+            "days": 180,
+            "rate": 0.8258,
+            "n": 15,
+            "lines": 7013
+          },
+          {
+            "days": 365,
+            "rate": 0.3849,
+            "n": 3,
+            "lines": 239
+          }
+        ]
+      },
+      {
+        "cohort": "ai-agent",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 6,
+            "lines": 2091
+          },
+          {
+            "days": 7,
+            "rate": 0.9923,
+            "n": 6,
+            "lines": 2091
+          },
+          {
+            "days": 30,
+            "rate": 0.9756,
+            "n": 6,
+            "lines": 2091
+          },
+          {
+            "days": 90,
+            "rate": 0.9354,
+            "n": 6,
+            "lines": 2091
+          },
+          {
+            "days": 180,
+            "rate": 0.6335,
+            "n": 5,
+            "lines": 1206
+          },
+          {
+            "days": 365,
+            "rate": 0.2782,
+            "n": 1,
+            "lines": 568
+          }
+        ]
+      },
+      {
+        "cohort": "bot",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 104,
+            "lines": 16845
+          },
+          {
+            "days": 7,
+            "rate": 0.9951,
+            "n": 103,
+            "lines": 10385
+          },
+          {
+            "days": 30,
+            "rate": 0.9833,
+            "n": 103,
+            "lines": 10385
+          },
+          {
+            "days": 90,
+            "rate": 0.953,
+            "n": 103,
+            "lines": 10385
+          },
+          {
+            "days": 180,
+            "rate": 0.911,
+            "n": 90,
+            "lines": 8461
+          },
+          {
+            "days": 365,
+            "rate": 0.851,
+            "n": 30,
+            "lines": 4710
+          }
+        ]
+      },
+      {
+        "cohort": "bot",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 9,
+            "lines": 5866
+          },
+          {
+            "days": 7,
+            "rate": 0.9998,
+            "n": 9,
+            "lines": 5866
+          },
+          {
+            "days": 30,
+            "rate": 0.9939,
+            "n": 9,
+            "lines": 5866
+          },
+          {
+            "days": 90,
+            "rate": 0.972,
+            "n": 9,
+            "lines": 5866
+          },
+          {
+            "days": 180,
+            "rate": 0.9679,
+            "n": 5,
+            "lines": 2869
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "mature",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 12,
+            "lines": 844
+          },
+          {
+            "days": 7,
+            "rate": 0.9958,
+            "n": 11,
+            "lines": 718
+          },
+          {
+            "days": 30,
+            "rate": 0.9851,
+            "n": 10,
+            "lines": 669
+          },
+          {
+            "days": 90,
+            "rate": 0.9759,
+            "n": 9,
+            "lines": 663
+          },
+          {
+            "days": 180,
+            "rate": 0.9589,
+            "n": 6,
+            "lines": 609
+          },
+          {
+            "days": 365,
+            "rate": 0.4286,
+            "n": 2,
+            "lines": 21
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 1841,
+            "lines": 971504
+          },
+          {
+            "days": 7,
+            "rate": 0.9444,
+            "n": 1744,
+            "lines": 905794
+          },
+          {
+            "days": 30,
+            "rate": 0.9036,
+            "n": 1578,
+            "lines": 723306
+          },
+          {
+            "days": 90,
+            "rate": 0.8189,
+            "n": 1164,
+            "lines": 515097
+          },
+          {
+            "days": 180,
+            "rate": 0.6868,
+            "n": 759,
+            "lines": 300748
+          },
+          {
+            "days": 365,
+            "rate": 0.5355,
+            "n": 269,
+            "lines": 106944
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 351,
+            "lines": 66230
+          },
+          {
+            "days": 7,
+            "rate": 0.9712,
+            "n": 339,
+            "lines": 65063
+          },
+          {
+            "days": 30,
+            "rate": 0.9459,
+            "n": 317,
+            "lines": 51789
+          },
+          {
+            "days": 90,
+            "rate": 0.8678,
+            "n": 261,
+            "lines": 36167
+          },
+          {
+            "days": 180,
+            "rate": 0.7862,
+            "n": 183,
+            "lines": 21666
+          },
+          {
+            "days": 365,
+            "rate": 0.7321,
+            "n": 38,
+            "lines": 2647
+          }
+        ]
+      }
+    ],
+    "maturity_mix": {
+      "new": 1999,
+      "mature": 12,
+      "young": 366
+    },
+    "seconds": 4048.3
+  },
+  {
+    "label": "opcode",
+    "source_kind": "github",
+    "github": "winfunc/opcode",
+    "commits": 199,
+    "cohorts": {
+      "ai-agent": 9,
+      "human": 190
+    },
+    "tools": {
+      "claude-code": 9
+    },
+    "skipped": "cohort too small (ai=9, human=190)"
+  },
+  {
+    "label": "openhands",
+    "source_kind": "github",
+    "github": "OpenHands/OpenHands",
+    "commits": 2788,
+    "cohorts": {
+      "human": 1194,
+      "ai-agent": 1482,
+      "bot": 112
+    },
+    "tools": {
+      "openhands": 1387,
+      "cursor": 32,
+      "github-copilot": 2,
+      "claude-code": 59,
+      "bot": 112,
+      "codex": 2
+    },
+    "scanned": 2778,
+    "curves_by_cohort": [
+      {
+        "cohort": "ai-agent",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 1446,
+            "lines": 759803
+          },
+          {
+            "days": 7,
+            "rate": 0.8058,
+            "n": 1308,
+            "lines": 511132
+          },
+          {
+            "days": 30,
+            "rate": 0.558,
+            "n": 1195,
+            "lines": 660288
+          },
+          {
+            "days": 90,
+            "rate": 0.4733,
+            "n": 944,
+            "lines": 382123
+          },
+          {
+            "days": 180,
+            "rate": 0.2423,
+            "n": 272,
+            "lines": 141318
+          }
+        ]
+      },
+      {
+        "cohort": "bot",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 112,
+            "lines": 4975
+          },
+          {
+            "days": 7,
+            "rate": 0.8574,
+            "n": 106,
+            "lines": 4390
+          },
+          {
+            "days": 30,
+            "rate": 0.6363,
+            "n": 79,
+            "lines": 4210
+          },
+          {
+            "days": 90,
+            "rate": 0.4827,
+            "n": 83,
+            "lines": 4123
+          },
+          {
+            "days": 180,
+            "rate": 0.0463,
+            "n": 33,
+            "lines": 2697
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 1147,
+            "lines": 274954
+          },
+          {
+            "days": 7,
+            "rate": 0.8249,
+            "n": 1036,
+            "lines": 232544
+          },
+          {
+            "days": 30,
+            "rate": 0.7197,
+            "n": 960,
+            "lines": 208208
+          },
+          {
+            "days": 90,
+            "rate": 0.5192,
+            "n": 788,
+            "lines": 153872
+          },
+          {
+            "days": 180,
+            "rate": 0.2501,
+            "n": 456,
+            "lines": 70159
+          }
+        ]
+      }
+    ],
+    "curves_by_cohort_maturity": [
+      {
+        "cohort": "ai-agent",
+        "maturity": "mature",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 1,
+            "lines": 2
+          },
+          {
+            "days": 7,
+            "rate": 1.0,
+            "n": 1,
+            "lines": 2
+          },
+          {
+            "days": 30,
+            "rate": 1.0,
+            "n": 1,
+            "lines": 2
+          },
+          {
+            "days": 90,
+            "rate": 1.0,
+            "n": 1,
+            "lines": 2
+          },
+          {
+            "days": 180,
+            "rate": 0.0,
+            "n": 1,
+            "lines": 2
+          }
+        ]
+      },
+      {
+        "cohort": "ai-agent",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 1270,
+            "lines": 741395
+          },
+          {
+            "days": 7,
+            "rate": 0.8037,
+            "n": 1138,
+            "lines": 494260
+          },
+          {
+            "days": 30,
+            "rate": 0.5547,
+            "n": 1030,
+            "lines": 643098
+          },
+          {
+            "days": 90,
+            "rate": 0.4708,
+            "n": 801,
+            "lines": 368851
+          },
+          {
+            "days": 180,
+            "rate": 0.2469,
+            "n": 213,
+            "lines": 135312
+          }
+        ]
+      },
+      {
+        "cohort": "ai-agent",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 175,
+            "lines": 18406
+          },
+          {
+            "days": 7,
+            "rate": 0.8691,
+            "n": 169,
+            "lines": 16870
+          },
+          {
+            "days": 30,
+            "rate": 0.6781,
+            "n": 164,
+            "lines": 17188
+          },
+          {
+            "days": 90,
+            "rate": 0.5422,
+            "n": 142,
+            "lines": 13270
+          },
+          {
+            "days": 180,
+            "rate": 0.1391,
+            "n": 58,
+            "lines": 6004
+          }
+        ]
+      },
+      {
+        "cohort": "bot",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 105,
+            "lines": 4957
+          },
+          {
+            "days": 7,
+            "rate": 0.8589,
+            "n": 99,
+            "lines": 4372
+          },
+          {
+            "days": 30,
+            "rate": 0.6357,
+            "n": 72,
+            "lines": 4192
+          },
+          {
+            "days": 90,
+            "rate": 0.4833,
+            "n": 76,
+            "lines": 4105
+          },
+          {
+            "days": 180,
+            "rate": 0.0462,
+            "n": 28,
+            "lines": 2686
+          }
+        ]
+      },
+      {
+        "cohort": "bot",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 7,
+            "lines": 18
+          },
+          {
+            "days": 7,
+            "rate": 0.5,
+            "n": 7,
+            "lines": 18
+          },
+          {
+            "days": 30,
+            "rate": 0.7778,
+            "n": 7,
+            "lines": 18
+          },
+          {
+            "days": 90,
+            "rate": 0.3333,
+            "n": 7,
+            "lines": 18
+          },
+          {
+            "days": 180,
+            "rate": 0.0909,
+            "n": 5,
+            "lines": 11
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "mature",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 2,
+            "lines": 16
+          },
+          {
+            "days": 7,
+            "rate": 0.75,
+            "n": 2,
+            "lines": 16
+          },
+          {
+            "days": 30,
+            "rate": 0.75,
+            "n": 2,
+            "lines": 16
+          },
+          {
+            "days": 90,
+            "rate": 0.75,
+            "n": 2,
+            "lines": 16
+          },
+          {
+            "days": 180,
+            "rate": 0.0,
+            "n": 1,
+            "lines": 12
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 985,
+            "lines": 265290
+          },
+          {
+            "days": 7,
+            "rate": 0.8307,
+            "n": 884,
+            "lines": 223554
+          },
+          {
+            "days": 30,
+            "rate": 0.7228,
+            "n": 809,
+            "lines": 199409
+          },
+          {
+            "days": 90,
+            "rate": 0.5231,
+            "n": 669,
+            "lines": 148619
+          },
+          {
+            "days": 180,
+            "rate": 0.2514,
+            "n": 372,
+            "lines": 67750
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 160,
+            "lines": 9648
+          },
+          {
+            "days": 7,
+            "rate": 0.681,
+            "n": 150,
+            "lines": 8974
+          },
+          {
+            "days": 30,
+            "rate": 0.6503,
+            "n": 149,
+            "lines": 8783
+          },
+          {
+            "days": 90,
+            "rate": 0.4084,
+            "n": 117,
+            "lines": 5237
+          },
+          {
+            "days": 180,
+            "rate": 0.2153,
+            "n": 83,
+            "lines": 2397
+          }
+        ]
+      }
+    ],
+    "maturity_mix": {
+      "new": 2360,
+      "young": 342,
+      "mature": 3
+    },
+    "seconds": 2744.7
+  },
+  {
+    "label": "private-a",
+    "source_kind": "local",
+    "commits": 984,
+    "cohorts": {
+      "human": 449,
+      "ai-agent": 535
+    },
+    "tools": {
+      "claude-code": 522,
+      "cursor": 13
+    },
+    "scanned": 980,
+    "curves_by_cohort": [
+      {
+        "cohort": "ai-agent",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 530,
+            "lines": 163935
+          },
+          {
+            "days": 7,
+            "rate": 0.8575,
+            "n": 530,
+            "lines": 163935
+          },
+          {
+            "days": 30,
+            "rate": 0.7538,
+            "n": 530,
+            "lines": 163935
+          },
+          {
+            "days": 90,
+            "rate": 0.7056,
+            "n": 510,
+            "lines": 162912
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": null,
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 444,
+            "lines": 113365
+          },
+          {
+            "days": 7,
+            "rate": 0.9325,
+            "n": 327,
+            "lines": 87986
+          },
+          {
+            "days": 30,
+            "rate": 0.8718,
+            "n": 444,
+            "lines": 113365
+          },
+          {
+            "days": 90,
+            "rate": 0.8661,
+            "n": 411,
+            "lines": 108682
+          }
+        ]
+      }
+    ],
+    "curves_by_cohort_maturity": [
+      {
+        "cohort": "ai-agent",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 528,
+            "lines": 163857
+          },
+          {
+            "days": 7,
+            "rate": 0.8574,
+            "n": 528,
+            "lines": 163857
+          },
+          {
+            "days": 30,
+            "rate": 0.7537,
+            "n": 528,
+            "lines": 163857
+          },
+          {
+            "days": 90,
+            "rate": 0.7055,
+            "n": 509,
+            "lines": 162837
+          }
+        ]
+      },
+      {
+        "cohort": "ai-agent",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 2,
+            "lines": 78
+          },
+          {
+            "days": 7,
+            "rate": 0.9359,
+            "n": 2,
+            "lines": 78
+          },
+          {
+            "days": 30,
+            "rate": 0.8974,
+            "n": 2,
+            "lines": 78
+          },
+          {
+            "days": 90,
+            "rate": 0.8933,
+            "n": 1,
+            "lines": 75
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "new",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 430,
+            "lines": 112631
+          },
+          {
+            "days": 7,
+            "rate": 0.9323,
+            "n": 317,
+            "lines": 87297
+          },
+          {
+            "days": 30,
+            "rate": 0.8712,
+            "n": 430,
+            "lines": 112631
+          },
+          {
+            "days": 90,
+            "rate": 0.8654,
+            "n": 397,
+            "lines": 107948
+          }
+        ]
+      },
+      {
+        "cohort": "human",
+        "maturity": "young",
+        "points": [
+          {
+            "days": 0,
+            "rate": 1.0,
+            "n": 14,
+            "lines": 734
+          },
+          {
+            "days": 7,
+            "rate": 0.9652,
+            "n": 10,
+            "lines": 689
+          },
+          {
+            "days": 30,
+            "rate": 0.9605,
+            "n": 14,
+            "lines": 734
+          },
+          {
+            "days": 90,
+            "rate": 0.9605,
+            "n": 14,
+            "lines": 734
+          }
+        ]
+      }
+    ],
+    "maturity_mix": {
+      "new": 958,
+      "young": 16
+    },
+    "seconds": 278.8
+  },
+  {
+    "label": "private-b",
+    "source_kind": "local",
+    "commits": 211,
+    "cohorts": {
+      "ai-agent": 201,
+      "human": 10
+    },
+    "tools": {
+      "claude-code": 201
+    },
+    "skipped": "cohort too small (ai=201, human=10)"
+  },
+  {
+    "label": "private-c",
+    "source_kind": "local",
+    "commits": 32,
+    "cohorts": {
+      "human": 13,
+      "ai-agent": 19
+    },
+    "tools": {
+      "claude-code": 19
+    },
+    "skipped": "only 32 commits (< 100)"
+  }
+]

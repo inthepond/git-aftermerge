@@ -1,0 +1,1012 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Track the downstream fate of every commit. Post-merge feedback for AI coding agents.">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../quickstart/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Findings - git-aftermerge</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#findings-ai-code-survival" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="git-aftermerge" class="md-header__button md-logo" aria-label="git-aftermerge" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            git-aftermerge
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Findings
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/inthepond/git-aftermerge" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    git-aftermerge
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="git-aftermerge" class="md-nav__button md-logo" aria-label="git-aftermerge" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    git-aftermerge
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/inthepond/git-aftermerge" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    git-aftermerge
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Findings
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#survival-curves-per-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Survival curves, per repo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-gap-repo-by-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The gap, repo by repo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-repo-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-repo numbers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-read-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to read this
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-maturity-signal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The maturity signal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Methodology
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caveats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caveats
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reproduce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reproduce
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mcp-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how-it-works/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How It Works
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#survival-curves-per-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Survival curves, per repo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-gap-repo-by-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The gap, repo by repo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-repo-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-repo numbers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-read-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to read this
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-maturity-signal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The maturity signal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Methodology
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caveats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caveats
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reproduce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reproduce
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="findings-ai-code-survival">Findings: AI Code Survival<a class="headerlink" href="#findings-ai-code-survival" title="Permanent link">&para;</a></h1>
+<p><em>What happens to AI-written code after it merges?</em> We ran git-aftermerge across
+open-source repositories that carry AI attribution in their commit history, plus
+one anonymized private repo, and compared — <strong>within each repo</strong> — how long
+AI-agent lines survive versus human lines.</p>
+<p><strong>10 repositories analyzed · 21,905 commits scanned · 3,346 AI-attributed
+(claude-code, openhands, gemini, cursor, aider, crush, copilot, amp, devin) ·
+data collected August 2026.</strong></p>
+<p>In the seven repos that pass the plausibility screen, the 30-day survival gap
+(human − AI, percentage points) runs from <strong>+32.4</strong> down to <strong>−10.0</strong>: four
+repos show AI-agent lines churning meaningfully faster than human lines,
+aider sits at parity, and two (LibreChat, browser-use) tilt slightly the
+other way. And the gap has a shape: it lives almost entirely in <strong>brand-new
+code</strong> — see <a href="#the-maturity-signal">the maturity signal</a>.</p>
+<h2 id="survival-curves-per-repo">Survival curves, per repo<a class="headerlink" href="#survival-curves-per-repo" title="Permanent link">&para;</a></h2>
+<p>Each panel is one repository. Lines show the fraction of merged lines still
+attributed to their commit N days later (<code>git blame -w</code>, histogram diff,
+checkpoints at 7/30/90/180 days, right-censored).</p>
+<p><img alt="Survival curves by repo" src="../assets/research/survival-curves-light.svg#only-light" />
+<img alt="Survival curves by repo" src="../assets/research/survival-curves-dark.svg#only-dark" /></p>
+<h2 id="the-gap-repo-by-repo">The gap, repo by repo<a class="headerlink" href="#the-gap-repo-by-repo" title="Permanent link">&para;</a></h2>
+<p>The headline number per repo: human 30-day survival minus AI 30-day survival,
+in percentage points. Positive means AI-agent lines churned faster than human
+lines <em>in that same repo</em>.</p>
+<p><img alt="Survival gap at day 30" src="../assets/research/survival-gap-light.svg#only-light" />
+<img alt="Survival gap at day 30" src="../assets/research/survival-gap-dark.svg#only-dark" /></p>
+<h2 id="per-repo-numbers">Per-repo numbers<a class="headerlink" href="#per-repo-numbers" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Repo</th>
+<th>Commits</th>
+<th>AI commits</th>
+<th>Tools</th>
+<th>30d AI</th>
+<th>30d human</th>
+<th>30d bot</th>
+<th>Gap (pp)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/OpenHands/OpenHands">openhands</a></td>
+<td>2788</td>
+<td>1482</td>
+<td>openhands, claude-code</td>
+<td>55.8% (n=1195)</td>
+<td>72.0% (n=960)</td>
+<td>63.6% (n=79)</td>
+<td>+16.2</td>
+</tr>
+<tr>
+<td>private-a</td>
+<td>984</td>
+<td>535</td>
+<td>claude-code, cursor</td>
+<td>75.4% (n=530)</td>
+<td>87.2% (n=444)</td>
+<td>—</td>
+<td>+11.8</td>
+</tr>
+<tr>
+<td><a href="https://github.com/assistant-ui/assistant-ui">assistant-ui</a></td>
+<td>2806</td>
+<td>267</td>
+<td>claude-code, github-copilot</td>
+<td>35.3% (n=140)</td>
+<td>67.7% (n=1693)</td>
+<td>75.7% (n=159)</td>
+<td>+32.4</td>
+</tr>
+<tr>
+<td><a href="https://github.com/google-gemini/gemini-cli">gemini-cli</a></td>
+<td>2912</td>
+<td>216</td>
+<td>gemini</td>
+<td>71.2% (n=204)</td>
+<td>93.8% (n=2574)</td>
+<td>—</td>
+<td>+22.5</td>
+</tr>
+<tr>
+<td><a href="https://github.com/badlogic/lemmy">lemmy</a></td>
+<td>324</td>
+<td>200</td>
+<td>claude-code</td>
+<td>25.3% (n=198)</td>
+<td>13.9% (n=117)</td>
+<td>—</td>
+<td>†</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Aider-AI/aider">aider</a></td>
+<td>263</td>
+<td>197</td>
+<td>aider, claude-code</td>
+<td>88.7% (n=185)</td>
+<td>87.8% (n=60)</td>
+<td>—</td>
+<td>-0.9</td>
+</tr>
+<tr>
+<td><a href="https://github.com/charmbracelet/crush">crush</a></td>
+<td>3719</td>
+<td>161</td>
+<td>crush, claude-code</td>
+<td>88.8% (n=115)</td>
+<td>13.0% (n=2943)</td>
+<td>36.7% (n=95)</td>
+<td>†</td>
+</tr>
+<tr>
+<td><a href="https://github.com/browser-use/browser-use">browser-use</a></td>
+<td>2179</td>
+<td>154</td>
+<td>claude-code, cursor</td>
+<td>60.6% (n=146)</td>
+<td>50.6% (n=1793)</td>
+<td>—</td>
+<td>-10.0</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ghostty-org/ghostty">ghostty</a></td>
+<td>3526</td>
+<td>74</td>
+<td>claude-code, amp</td>
+<td>74.0% (n=62)</td>
+<td>15.0% (n=2722)</td>
+<td>44.0% (n=115)</td>
+<td>†</td>
+</tr>
+<tr>
+<td><a href="https://github.com/danny-avila/LibreChat">librechat</a></td>
+<td>2404</td>
+<td>60</td>
+<td>claude-code, github-copilot</td>
+<td>95.3% (n=43)</td>
+<td>90.6% (n=1905)</td>
+<td>98.7% (n=112)</td>
+<td>-4.6</td>
+</tr>
+</tbody>
+</table>
+<p>† tree-scale rewrite inside the analysis window (a &gt;50pp swing between adjacent checkpoints) — blame lineage unreliable, excluded from the gap chart.</p>
+<h2 id="how-to-read-this">How to read this<a class="headerlink" href="#how-to-read-this" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Where AI is a minority contributor, its code churns faster.</strong> Four of the
+  seven screened repos show a positive gap (+12 to +32 pp at day 30). The
+  repos at or near parity (aider, LibreChat) are projects with
+  long-established, review-heavy AI workflows.</li>
+<li><strong>The inversions are informative, not noise.</strong> The repos where AI code
+  <em>outlives</em> human code are AI-native projects where most development happens
+  through an agent; there, "human" commits are often small manual fixes that the
+  next agent pass rewrites.</li>
+<li><strong>The negative control holds.</strong> Dependabot/Renovate commits (the <code>bot</code>
+  cohort) are fully automated but deterministic. Where present in volume, bot
+  lines survive <em>better</em> than both AI and human lines — automated-but-correct
+  changes stick. If the detection logic were simply penalizing automation, the
+  bot curve would look like the AI curve. It doesn't.</li>
+</ul>
+<h2 id="the-maturity-signal">The maturity signal<a class="headerlink" href="#the-maturity-signal" title="Permanent link">&para;</a></h2>
+<p>Every file change records how old the touched code was, bucketed into
+tiers: <strong>new</strong> (&lt; 30 days), <strong>young</strong> (30–365 days), <strong>mature</strong> (&gt; 1 year).
+Slicing the 30-day gap by tier shows where the AI-vs-human difference
+actually lives:</p>
+<table>
+<thead>
+<tr>
+<th>Repo</th>
+<th>Gap, all commits</th>
+<th>Gap, young-code commits only</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>assistant-ui</td>
+<td>+32.4</td>
+<td>+2.3 (n=12 AI, 196 human)</td>
+</tr>
+<tr>
+<td>openhands</td>
+<td>+16.2</td>
+<td>−2.8 (n=164, 149)</td>
+</tr>
+<tr>
+<td>gemini-cli</td>
+<td>+22.5</td>
+<td>+15.6 (n=18, 235)</td>
+</tr>
+<tr>
+<td>browser-use</td>
+<td>−10.0</td>
+<td>−2.4 (n=9, 105)</td>
+</tr>
+<tr>
+<td>librechat</td>
+<td>−4.6</td>
+<td>−3.0 (n=6, 317)</td>
+</tr>
+<tr>
+<td>aider</td>
+<td>−0.9</td>
+<td>+1.4 (n=30, 9)</td>
+</tr>
+</tbody>
+</table>
+<p>In five of six repos with a young-code slice, the gap collapses to within
+±3 pp once the commit touches code at least 30 days old — even in
+assistant-ui, whose overall gap is +32. gemini-cli is the exception that
+keeps a gap. Preliminary (the AI × young cells are small), but the shape is
+consistent: <strong>AI churn concentrates in freshly-written code being reworked
+again and again; when an agent edits established code, its changes stick
+about as well as a human's.</strong> This is exactly why churn numbers without a
+maturity layer are noise — healthy iteration on new features and AI breaking
+mature logic would otherwise count as the same thing. The mature (&gt; 1 year)
+tier is still too thin to read; that needs older repos.</p>
+<h2 id="methodology">Methodology<a class="headerlink" href="#methodology" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Within-repo comparison only.</strong> Repos that accept AI-attributed commits skew
+  young, small, and single-maintainer. Comparing their churn to other projects
+  measures selection, not AI. Every number here compares cohorts <em>inside</em> one
+  repo, holding project maturity, team, domain, and test culture constant.
+  Across repos we only look at the distribution of the <em>difference</em>.</li>
+<li><strong>Attribution is trailer-based and conservative.</strong> A commit counts as
+  <code>ai-agent</code> only if it carries a machine-readable trace: <code>Co-Authored-By:
+  Claude</code> (Claude Code's default), Cursor/Copilot/aider/Devin/OpenHands/Gemini
+  identities, or the <code>Generated-By:</code> convention. AI use without trailers is
+  invisible to us — cohort sizes are a <strong>lower bound</strong>, and repos where
+  maintainers strip trailers show tiny AI cohorts regardless of actual AI use.</li>
+<li><strong>Survival = blame attribution.</strong> A line "survives" while <code>git blame -w</code>
+  (whitespace-insensitive, histogram diff) still attributes it to its commit.
+  Checkpoints at 7/30/90/180/365 days after the <em>committer date</em> (when the
+  change landed), observed only at repo states that contain the commit
+  (<code>merge-base --is-ancestor</code>), so unmerged branch time counts as censoring,
+  never as death.</li>
+<li><strong>Right-censoring, not extrapolation.</strong> A commit contributes to a checkpoint
+  only once it has aged past it. Each point shows its eligible cohort size
+  (<code>n=</code>); points with n &lt; 5 are dropped.</li>
+<li><strong>Plausibility screen.</strong> A swing larger than 50 pp between adjacent
+  checkpoints of a well-sampled cohort (n ≥ 30) means a tree-scale rewrite
+  (mass reformat, restructure, rebrand) happened inside the window — blame
+  lineage is unreliable there. Such repos (†) stay in the curve grid but are
+  excluded from the single-number gap chart. This screen exists because our
+  ground-truth validation kept finding that implausible curves trace back to
+  history events, not to code quality.</li>
+</ul>
+<h2 id="caveats">Caveats<a class="headerlink" href="#caveats" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Cohort composition differs between checkpoints of the same curve (this is a
+  per-checkpoint estimator, not Kaplan–Meier), so curves can wiggle where
+  eligible sets change quickly.</li>
+<li>File renames break line lineage — renamed code reads as died.</li>
+<li>Nearly all analyzed changes touch <em>new</em> code (&lt; 30 days old); the young-tier
+  slices above are small, and the mature (&gt; 1 year) tier is too thin to read
+  until older repos join the sample.</li>
+<li>A revert of an AI commit authored by a human counts against the AI cohort,
+  and vice versa — this is the intended semantics, but keep it in mind.</li>
+</ul>
+<h2 id="reproduce">Reproduce<a class="headerlink" href="#reproduce" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/inthepond/git-aftermerge<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>git-aftermerge
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+
+<span class="c1"># any repo, no init needed — how much attributed history is there?</span>
+git-aftermerge<span class="w"> </span>attribution<span class="w"> </span>--repo<span class="w"> </span>/path/to/repo
+
+<span class="c1"># the batch study</span>
+python<span class="w"> </span>scripts/batch_survival.py<span class="w"> </span>config.json<span class="w"> </span>workdir<span class="w"> </span>results.json<span class="w"> </span>--jobs<span class="w"> </span><span class="m">4</span>
+python<span class="w"> </span>scripts/make_charts.py<span class="w"> </span>results.json<span class="w"> </span>docs/assets/research
+</code></pre></div>
+<p>The exact per-repo results behind these charts: <a href="../data/batch-results.json">batch-results.json</a>.
+Private repos appear as <code>private-*</code> with paths stripped.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
