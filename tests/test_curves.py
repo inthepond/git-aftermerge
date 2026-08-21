@@ -168,3 +168,11 @@ class TestEndToEnd:
         by_sha = {r["sha"]: r for r in rows}
         assert by_sha[ai_repo["shas"]["claude"]]["cohort"] == "ai-agent"
         assert by_sha[ai_repo["shas"]["bot"]]["cohort"] == "bot"
+
+
+def test_survival_rate_clamped_at_100():
+    """blame's diff can over-attribute vs numstat; rates must cap at 1.0."""
+    rows = [_row("human", "mature", 12, {"7d": 13})]  # 13 surviving of 12 added
+    curves = compute_curves(rows, by="cohort")
+    points = {p.days: p for p in curves[0].points}
+    assert points[7].survival_rate == 1.0

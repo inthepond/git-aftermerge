@@ -96,10 +96,17 @@ def _run_scan(
     else:
         revert_events = bug_events = churn_events = incident_events = {}
 
+    from git_aftermerge.analyzer.correlation import BUG_FIX_DETECTOR
+
     all_events: dict[str, list] = {}
-    for source in (revert_events, bug_events, churn_events, incident_events):
+    for source, detector in (
+        (revert_events, "revert-1"),
+        (bug_events, BUG_FIX_DETECTOR),
+        (churn_events, "churn-1"),
+        (incident_events, BUG_FIX_DETECTOR),
+    ):
         for sha, evts in source.items():
-            all_events.setdefault(sha, []).extend(evts)
+            all_events.setdefault(sha, []).extend((e, detector) for e in evts)
 
     total = len(commits)
     if total > 5000:
@@ -133,8 +140,8 @@ def _run_scan(
 
             # Replace links for this commit
             db.delete_links(commit.sha)
-            for event in all_events.get(commit.sha, []):
-                db.insert_link(commit.sha, event)
+            for event, detector in all_events.get(commit.sha, []):
+                db.insert_link(commit.sha, event, detector=detector)
 
             # Checkpoint + HEAD survival observations. Historical checkpoints
             # are immutable, so skip ones already recorded unless --full.

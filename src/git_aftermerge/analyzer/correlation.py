@@ -1,4 +1,14 @@
-"""Bug-fix and churn correlation engine."""
+"""Bug-fix and churn correlation engine.
+
+Bug-introduction linkage follows the SZZ family (Śliwerski/Zimmermann/Zeller
+2005 and the AG-SZZ refinement): the suspect lines are exactly the lines a
+fix *deleted or replaced* — blame those at the fix's parent and the blamed
+commits are the candidates that introduced the defect. Whole-file blame (the
+naive approach) implicates everyone who ever touched the file and is mostly
+noise. Trivial lines (blank, punctuation-only, comment-only) are excluded, as
+in AG-SZZ; whitespace-only changes never implicate because diff and blame
+both run whitespace-insensitive.
+"""
 
 import re
 from collections import defaultdict
@@ -9,6 +19,9 @@ from typing import Optional
 from git_aftermerge.analyzer.git_reader import CommitInfo, GitReader
 from git_aftermerge.storage.models import DownstreamEvent, EventType
 
+# Recorded on each link so heuristic changes can be told apart in the facts.
+BUG_FIX_DETECTOR = "szz-2"
+
 BUG_KEYWORDS = re.compile(
     r"\b(fix|bug|hotfix|bugfix|issue|error|crash|regression|patch|defect)\b",
     re.IGNORECASE,
@@ -18,16 +31,75 @@ INCIDENT_KEYWORDS = re.compile(
     re.IGNORECASE,
 )
 
+# Lines that carry no blame-worthy semantics: blank, lone braces/brackets,
+# and comment-only lines across common languages (AG-SZZ's key refinement).
+TRIVIAL_LINE = re.compile(
+    r"^\s*$"
+    r"|^\s*[{}()\[\];,]+\s*$"
+    r"|^\s*(#|//|/\*|\*|\*/|--|<!--|'''|\"\"\")"
+)
+
 
 class CorrelationEngine:
     def __init__(self, repo_path: Path) -> None:
         self.repo = GitReader(repo_path)
+
+    def _implicated_line_counts(
+        self,
+        commit: CommitInfo,
+        commit_map: dict[str, CommitInfo],
+        window_days: Optional[int],
+    ) -> dict[str, int]:
+        """SZZ core: blame exactly the lines ``commit`` deleted, at its parent.
+
+        Returns implicated source sha -> number of non-trivial deleted lines
+        it owned. ``window_days`` limits how old an implicated commit may be
+        (None = no limit).
+        """
+        details = (
+            commit.file_details or self.repo.get_diff_stats(commit.sha).file_details
+        )
+        if not details:
+            return {}
+        try:
+            parent_sha = self._get_parent(commit.sha)
+        except RuntimeError:
+            return {}
+        if not parent_sha:
+            return {}
+
+        implicated: dict[str, int] = defaultdict(int)
+        for file_path in details:
+            deleted = self.repo.get_deleted_lines_by_commit(commit.sha, file_path)
+            if not deleted:
+                continue
+            blame = self.repo.get_blame_snapshot(file_path, parent_sha)
+            if not blame:
+                continue
+            for line_no in deleted:
+                entry = blame.get(line_no)
+                if entry is None:
+                    continue
+                if TRIVIAL_LINE.match(entry.line_content):
+                    continue
+                blamed_sha = entry.commit_sha
+                if blamed_sha == commit.sha or blamed_sha not in commit_map:
+                    continue
+                delta = commit.date - commit_map[blamed_sha].date
+                if delta <= timedelta(0):
+                    continue
+                if window_days is not None and delta > timedelta(days=window_days):
+                    continue
+                implicated[blamed_sha] += 1
+        return dict(implicated)
 
     def find_bug_fix_correlations(
         self, commits: list[CommitInfo], window_days: int = 14
     ) -> dict[str, list[DownstreamEvent]]:
         """
         Returns mapping of original_sha -> list[DownstreamEvent(BUG_FIX_LINKED)].
+        lines_affected on each event is the count of the source commit's
+        non-trivial lines that the fix deleted or replaced.
         """
         events: dict[str, list[DownstreamEvent]] = defaultdict(list)
         commit_map = {c.sha: c for c in commits}
@@ -38,58 +110,17 @@ class CorrelationEngine:
         ]
 
         for fix_commit in bug_fixes:
-            fix_details = (
-                fix_commit.file_details
-                or self.repo.get_diff_stats(fix_commit.sha).file_details
-            )
-            if not fix_details:
-                continue
-
-            for file_path in fix_details:
-                # Get blame just before this fix
-                try:
-                    parent_sha = self._get_parent(fix_commit.sha)
-                except RuntimeError:
-                    continue
-                if not parent_sha:
-                    continue
-
-                blame = self.repo.get_blame_snapshot(file_path, parent_sha)
-                if not blame:
-                    continue
-
-                # Find earlier commits that last touched these lines
-                implicated: set[str] = set()
-                for entry in blame.values():
-                    blamed_sha = entry.commit_sha
-                    if blamed_sha == fix_commit.sha:
-                        continue
-                    if blamed_sha not in commit_map:
-                        continue
-                    blamed_commit = commit_map[blamed_sha]
-                    # Within window
-                    delta = fix_commit.date - blamed_commit.date
-                    if timedelta(0) < delta <= timedelta(days=window_days):
-                        implicated.add(blamed_sha)
-
-                for orig_sha in implicated:
-                    event = DownstreamEvent(
-                        event_type=EventType.BUG_FIX_LINKED,
-                        commit_sha=fix_commit.sha,
-                        date=fix_commit.date.replace(tzinfo=None),
-                        lines_affected=fix_details[file_path][1],
-                        commit_message=fix_commit.message,
-                        author=fix_commit.author,
-                    )
-                    # Avoid duplicate events
-                    existing = events[orig_sha]
-                    already = any(
-                        e.commit_sha == fix_commit.sha
-                        and e.event_type == EventType.BUG_FIX_LINKED
-                        for e in existing
-                    )
-                    if not already:
-                        events[orig_sha].append(event)
+            for orig_sha, n_lines in self._implicated_line_counts(
+                fix_commit, commit_map, window_days
+            ).items():
+                events[orig_sha].append(DownstreamEvent(
+                    event_type=EventType.BUG_FIX_LINKED,
+                    commit_sha=fix_commit.sha,
+                    date=fix_commit.date.replace(tzinfo=None),
+                    lines_affected=n_lines,
+                    commit_message=fix_commit.message,
+                    author=fix_commit.author,
+                ))
 
         return dict(events)
 
@@ -160,34 +191,17 @@ class CorrelationEngine:
         incident_commits = [c for c in commits if INCIDENT_KEYWORDS.search(c.message)]
 
         for inc_commit in incident_commits:
-            inc_details = (
-                inc_commit.file_details
-                or self.repo.get_diff_stats(inc_commit.sha).file_details
-            )
-            for file_path in inc_details:
-                try:
-                    parent_sha = self._get_parent(inc_commit.sha)
-                except RuntimeError:
-                    continue
-                if not parent_sha:
-                    continue
-
-                blame = self.repo.get_blame_snapshot(file_path, parent_sha)
-                for entry in blame.values():
-                    orig_sha = entry.commit_sha
-                    if orig_sha == inc_commit.sha or orig_sha not in commit_map:
-                        continue
-                    event = DownstreamEvent(
-                        event_type=EventType.INCIDENT_TAG,
-                        commit_sha=inc_commit.sha,
-                        date=inc_commit.date.replace(tzinfo=None),
-                        lines_affected=0,
-                        commit_message=inc_commit.message,
-                        author=inc_commit.author,
-                    )
-                    existing = events[orig_sha]
-                    if not any(e.commit_sha == inc_commit.sha for e in existing):
-                        events[orig_sha].append(event)
+            for orig_sha, n_lines in self._implicated_line_counts(
+                inc_commit, commit_map, window_days=None
+            ).items():
+                events[orig_sha].append(DownstreamEvent(
+                    event_type=EventType.INCIDENT_TAG,
+                    commit_sha=inc_commit.sha,
+                    date=inc_commit.date.replace(tzinfo=None),
+                    lines_affected=n_lines,
+                    commit_message=inc_commit.message,
+                    author=inc_commit.author,
+                ))
 
         return dict(events)
 

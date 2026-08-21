@@ -10,10 +10,11 @@ AI-agent lines survive versus human lines.
 data collected August 2026.**
 
 In the seven repos that pass the plausibility screen, the 30-day survival gap
-(human − AI, percentage points) runs from **+32.5** down to **−10.0**: four
+(human − AI, percentage points) runs from **+32.4** down to **−10.0**: four
 repos show AI-agent lines churning meaningfully faster than human lines,
-two mature AI-workflow repos (aider, LibreChat) show parity, and one
-AI-native repo shows the inversion.
+aider sits at parity, and two (LibreChat, browser-use) tilt slightly the
+other way. And the gap has a shape: it lives almost entirely in **brand-new
+code** — see [the maturity signal](#the-maturity-signal).
 
 ## Survival curves, per repo
 
@@ -37,25 +38,25 @@ lines *in that same repo*.
 
 | Repo | Commits | AI commits | Tools | 30d AI | 30d human | 30d bot | Gap (pp) |
 |---|---|---|---|---|---|---|---|
-| [openhands](https://github.com/OpenHands/OpenHands) | 2788 | 1482 | openhands, claude-code | 56.9% (n=1195) | 72.2% (n=960) | 63.7% (n=79) | +15.4 |
-| private-a | 984 | 535 | claude-code, cursor | 75.8% (n=530) | 87.2% (n=444) | — | +11.3 |
-| [assistant-ui](https://github.com/assistant-ui/assistant-ui) | 2806 | 267 | claude-code, github-copilot | 35.3% (n=140) | 67.8% (n=1693) | 75.7% (n=159) | +32.5 |
+| [openhands](https://github.com/OpenHands/OpenHands) | 2788 | 1482 | openhands, claude-code | 55.8% (n=1195) | 72.0% (n=960) | 63.6% (n=79) | +16.2 |
+| private-a | 984 | 535 | claude-code, cursor | 75.4% (n=530) | 87.2% (n=444) | — | +11.8 |
+| [assistant-ui](https://github.com/assistant-ui/assistant-ui) | 2806 | 267 | claude-code, github-copilot | 35.3% (n=140) | 67.7% (n=1693) | 75.7% (n=159) | +32.4 |
 | [gemini-cli](https://github.com/google-gemini/gemini-cli) | 2912 | 216 | gemini | 71.2% (n=204) | 93.8% (n=2574) | — | +22.5 |
-| [lemmy](https://github.com/badlogic/lemmy) | 324 | 200 | claude-code | 28.7% (n=198) | 13.9% (n=117) | — | † |
+| [lemmy](https://github.com/badlogic/lemmy) | 324 | 200 | claude-code | 25.3% (n=198) | 13.9% (n=117) | — | † |
 | [aider](https://github.com/Aider-AI/aider) | 263 | 197 | aider, claude-code | 88.7% (n=185) | 87.8% (n=60) | — | -0.9 |
 | [crush](https://github.com/charmbracelet/crush) | 3719 | 161 | crush, claude-code | 88.8% (n=115) | 13.0% (n=2943) | 36.7% (n=95) | † |
 | [browser-use](https://github.com/browser-use/browser-use) | 2179 | 154 | claude-code, cursor | 60.6% (n=146) | 50.6% (n=1793) | — | -10.0 |
 | [ghostty](https://github.com/ghostty-org/ghostty) | 3526 | 74 | claude-code, amp | 74.0% (n=62) | 15.0% (n=2722) | 44.0% (n=115) | † |
-| [librechat](https://github.com/danny-avila/LibreChat) | 2404 | 60 | claude-code, github-copilot | 95.3% (n=43) | 94.3% (n=1905) | 98.7% (n=112) | -1.0 |
+| [librechat](https://github.com/danny-avila/LibreChat) | 2404 | 60 | claude-code, github-copilot | 95.3% (n=43) | 90.6% (n=1905) | 98.7% (n=112) | -4.6 |
 
 † tree-scale rewrite inside the analysis window (a >50pp swing between adjacent checkpoints) — blame lineage unreliable, excluded from the gap chart.
 
 ## How to read this
 
 - **Where AI is a minority contributor, its code churns faster.** Four of the
-  seven screened repos show a positive gap (+11 to +33 pp at day 30). The two
-  repos at parity (aider, LibreChat) are projects with long-established,
-  review-heavy AI workflows.
+  seven screened repos show a positive gap (+12 to +32 pp at day 30). The
+  repos at or near parity (aider, LibreChat) are projects with
+  long-established, review-heavy AI workflows.
 - **The inversions are informative, not noise.** The repos where AI code
   *outlives* human code are AI-native projects where most development happens
   through an agent; there, "human" commits are often small manual fixes that the
@@ -65,6 +66,33 @@ lines *in that same repo*.
   lines survive *better* than both AI and human lines — automated-but-correct
   changes stick. If the detection logic were simply penalizing automation, the
   bot curve would look like the AI curve. It doesn't.
+
+## The maturity signal
+
+Every file change records how old the touched code was, bucketed into
+tiers: **new** (< 30 days), **young** (30–365 days), **mature** (> 1 year).
+Slicing the 30-day gap by tier shows where the AI-vs-human difference
+actually lives:
+
+| Repo | Gap, all commits | Gap, young-code commits only |
+|---|---|---|
+| assistant-ui | +32.4 | +2.3 (n=12 AI, 196 human) |
+| openhands | +16.2 | −2.8 (n=164, 149) |
+| gemini-cli | +22.5 | +15.6 (n=18, 235) |
+| browser-use | −10.0 | −2.4 (n=9, 105) |
+| librechat | −4.6 | −3.0 (n=6, 317) |
+| aider | −0.9 | +1.4 (n=30, 9) |
+
+In five of six repos with a young-code slice, the gap collapses to within
+±3 pp once the commit touches code at least 30 days old — even in
+assistant-ui, whose overall gap is +32. gemini-cli is the exception that
+keeps a gap. Preliminary (the AI × young cells are small), but the shape is
+consistent: **AI churn concentrates in freshly-written code being reworked
+again and again; when an agent edits established code, its changes stick
+about as well as a human's.** This is exactly why churn numbers without a
+maturity layer are noise — healthy iteration on new features and AI breaking
+mature logic would otherwise count as the same thing. The mature (> 1 year)
+tier is still too thin to read; that needs older repos.
 
 ## Methodology
 
@@ -102,8 +130,9 @@ lines *in that same repo*.
   per-checkpoint estimator, not Kaplan–Meier), so curves can wiggle where
   eligible sets change quickly.
 - File renames break line lineage — renamed code reads as died.
-- Nearly all analyzed changes touch *new* code (< 30 days old); the
-  new/young/mature maturity split will only become informative on older repos.
+- Nearly all analyzed changes touch *new* code (< 30 days old); the young-tier
+  slices above are small, and the mature (> 1 year) tier is too thin to read
+  until older repos join the sample.
 - A revert of an AI commit authored by a human counts against the AI cohort,
   and vice versa — this is the intended semantics, but keep it in mind.
 

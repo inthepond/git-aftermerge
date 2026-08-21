@@ -125,14 +125,25 @@ Two methods, in priority order:
 1. **Standard git revert** — commit message starts with "Revert" and body contains `This reverts commit <sha>`
 2. **Manual revert heuristic** — a commit that deletes >80% of the lines added by a previous commit to the same files, within 7 days
 
-## Bug-Fix Correlation
+## Bug-Fix Correlation (SZZ)
 
-For each commit identified as a bug fix (commit type `fix` or message contains fix/bug/hotfix keywords):
+Bug-introduction linkage follows the SZZ family (Śliwerski/Zimmermann/Zeller
+2005, with the AG-SZZ trivial-line refinement). For each commit identified as
+a bug fix (commit type `fix` or message contains fix/bug/hotfix keywords):
 
-1. Get the files and lines touched
-2. Run `git blame` at the commit before the fix
-3. Find which earlier commits last touched those lines
-4. If the earlier commit was merged within the last 14 days, link them as `BUG_FIX_LINKED`
+1. Parse the fix's diff and collect exactly the **lines it deleted or
+   replaced** — those are the suspect lines. (Whole-file blame would
+   implicate everyone who ever touched the file; that is mostly noise.)
+2. Run `git blame -w` on those specific line numbers at the fix's parent
+3. Drop **trivial lines**: blank, punctuation-only, comment-only —
+   deleting a comment does not implicate its author
+4. The blamed commits, if merged within the last 14 days, get a
+   `BUG_FIX_LINKED` event whose `lines_affected` is the count of their
+   non-trivial lines the fix removed
+
+Links record a detector version (`szz-2`) so heuristic changes remain
+distinguishable in the fact tables. Incident tagging uses the same
+line-precise core without the time window.
 
 ## Churn Spike Detection
 

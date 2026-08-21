@@ -67,7 +67,12 @@ def compute_curves(
             total_lines = sum(r["lines_added"] for r in eligible)
             if total_lines == 0:
                 continue
-            surviving = sum(r["observations"][label] for r in eligible)
+            # Clamp per commit: blame's internal diff can attribute slightly
+            # more lines than numstat's histogram diff counted as added, so
+            # uncapped sums can exceed 100% on small high-survival cohorts.
+            surviving = sum(
+                min(r["observations"][label], r["lines_added"]) for r in eligible
+            )
             points.append(CurvePoint(
                 days=days,
                 survival_rate=round(surviving / total_lines, 4),

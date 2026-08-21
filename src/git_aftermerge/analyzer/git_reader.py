@@ -355,6 +355,37 @@ class GitReader:
             ))
         return commits
 
+    def get_deleted_lines_by_commit(self, commit_sha: str, file_path: str) -> list[int]:
+        """Old-file line numbers deleted/replaced by a commit in one file.
+
+        These are the suspect lines for SZZ-style bug-introduction linkage:
+        blaming exactly them at the commit's parent yields the commits whose
+        code the fix removed.
+        """
+        output = self._run(
+            "diff", *DIFF_FLAGS, f"{commit_sha}^", commit_sha, "--", file_path,
+            check=False,
+        )
+        if not output:
+            return []
+
+        deleted_lines = []
+        current_old_line = 0
+        for line in output.splitlines():
+            hunk_match = re.match(r"^@@ -(\d+)(?:,(\d+))? \+\d+(?:,\d+)? @@", line)
+            if hunk_match:
+                current_old_line = int(hunk_match.group(1))
+                continue
+            if line.startswith("-") and not line.startswith("---"):
+                deleted_lines.append(current_old_line)
+                current_old_line += 1
+            elif line.startswith("+") and not line.startswith("+++"):
+                pass  # added lines don't advance the old-file counter
+            elif not line.startswith("\\"):
+                current_old_line += 1
+
+        return deleted_lines
+
     def get_added_lines_by_commit(self, commit_sha: str, file_path: str) -> list[int]:
         """Return line numbers added by commit in file (1-indexed)."""
         # Use diff to find which lines were added in the commit for this file

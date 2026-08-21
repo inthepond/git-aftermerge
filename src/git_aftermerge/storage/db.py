@@ -363,12 +363,16 @@ class Database:
             files = files_map.get(sha, [])
             lines_added = row["lines_added"]
 
+            # Clamp: blame's internal diff can attribute slightly more lines
+            # than numstat's histogram diff counted as added.
             head_obs = observations.get(HEAD_LABEL)
-            surviving = head_obs.surviving_lines if head_obs else lines_added
+            surviving = (
+                min(head_obs.surviving_lines, lines_added) if head_obs else lines_added
+            )
 
             early_obs = observations.get(checkpoint_label(CHECKPOINT_DAYS[0]))
             early_ratio = (
-                early_obs.surviving_lines / lines_added
+                min(early_obs.surviving_lines, lines_added) / lines_added
                 if early_obs and lines_added > 0 else None
             )
 
