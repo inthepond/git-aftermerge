@@ -11,3 +11,4 @@ build/
 site/
 .coverage
 htmlcov/
+assets/social/

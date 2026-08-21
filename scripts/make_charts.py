@@ -91,17 +91,23 @@ def has_upheaval(repo: dict) -> bool:
     return False
 
 
-def small_multiples(repos: list[dict], mode: str) -> str:
+def small_multiples(
+    repos: list[dict], mode: str, cols: int = 4,
+    panel_w: int = 218, panel_h: int = 150, fs: float = 1.0,
+) -> str:
+    """``cols``/``panel_w``/``panel_h``/``fs`` (font scale) support the social
+    variant: fewer, larger panels with bigger type for feed rendering."""
     m = MODES[mode]
-    cols = 4
-    panel_w, panel_h = 218, 150
     pad_x, pad_y = 16, 14
-    plot_l, plot_r, plot_t, plot_b = 30, 12, 26, 20
+    plot_l = int(30 * fs)
+    plot_r, plot_t, plot_b = 12, int(26 * fs), int(20 * fs)
     rows = math.ceil(len(repos) / cols)
-    legend_h = 34
+    legend_h = int(34 * fs)
     footnote = any(has_upheaval(r) for r in repos)
     width = pad_x * 2 + cols * panel_w
-    height = pad_y * 2 + legend_h + rows * panel_h + 18 + (13 if footnote else 0)
+    height = int(pad_y * 2 + legend_h + rows * panel_h + 18 * fs) + (
+        int(13 * fs) if footnote else 0
+    )
 
     y_min = 40.0
     for r in repos:
@@ -121,18 +127,21 @@ def small_multiples(repos: list[dict], mode: str) -> str:
 
     lx = pad_x + 2
     out.append(
-        f'<text x="{lx}" y="{pad_y + 12}" font-size="13" font-weight="600" '
+        f'<text x="{lx}" y="{pad_y + 12 * fs}" font-size="{13 * fs}" font-weight="600" '
         f'fill="{m["ink"]}">Line survival after merge — AI vs human, within each repo</text>'
     )
     ly = pad_y + legend_h - 6
     for cohort in ("ai-agent", "human", "bot"):
         color = m["series"][cohort]
         label = COHORT_LABELS[cohort]
-        out.append(f'<circle cx="{lx + 5}" cy="{ly - 4}" r="5" fill="{color}"/>')
         out.append(
-            f'<text x="{lx + 15}" y="{ly}" font-size="11" fill="{m["ink2"]}">{label}</text>'
+            f'<circle cx="{lx + 5 * fs}" cy="{ly - 4 * fs}" r="{5 * fs}" fill="{color}"/>'
         )
-        lx += 15 + 8 * len(label) + 24
+        out.append(
+            f'<text x="{lx + 15 * fs}" y="{ly}" font-size="{11 * fs}" '
+            f'fill="{m["ink2"]}">{label}</text>'
+        )
+        lx += int((15 + 8 * len(label) + 24) * fs)
 
     for i, repo in enumerate(repos):
         col, row = i % cols, i // cols
@@ -144,11 +153,11 @@ def small_multiples(repos: list[dict], mode: str) -> str:
         name = repo["label"] + (" †" if has_upheaval(repo) else "")
         n_ai = repo["cohorts"].get("ai-agent", 0)
         out.append(
-            f'<text x="{ox + plot_l}" y="{oy + 13}" font-size="11.5" font-weight="600" '
-            f'fill="{m["ink"]}">{esc(name)}</text>'
+            f'<text x="{ox + plot_l}" y="{oy + 13 * fs}" font-size="{11.5 * fs}" '
+            f'font-weight="600" fill="{m["ink"]}">{esc(name)}</text>'
         )
         out.append(
-            f'<text x="{ox + panel_w - plot_r}" y="{oy + 13}" font-size="10" '
+            f'<text x="{ox + panel_w - plot_r}" y="{oy + 13 * fs}" font-size="{10 * fs}" '
             f'text-anchor="end" fill="{m["muted"]}">{repo["commits"]}c · {n_ai} AI</text>'
         )
 
@@ -160,14 +169,14 @@ def small_multiples(repos: list[dict], mode: str) -> str:
                 f'stroke="{m["grid"]}" stroke-width="1"/>'
             )
             out.append(
-                f'<text x="{gx - 5}" y="{yy + 3.5:.1f}" font-size="9" text-anchor="end" '
-                f'fill="{m["muted"]}">{pct}</text>'
+                f'<text x="{gx - 5}" y="{yy + 3.5 * fs:.1f}" font-size="{9 * fs}" '
+                f'text-anchor="end" fill="{m["muted"]}">{pct}</text>'
             )
         for tick in X_TICKS:
             tx = gx + x_scale(tick, w)
             out.append(
-                f'<text x="{tx:.1f}" y="{gy + h + 13}" font-size="9" text-anchor="middle" '
-                f'fill="{m["muted"]}">{tick}</text>'
+                f'<text x="{tx:.1f}" y="{gy + h + 13 * fs}" font-size="{9 * fs}" '
+                f'text-anchor="middle" fill="{m["muted"]}">{tick}</text>'
             )
         out.append(
             f'<line x1="{gx}" y1="{gy + h}" x2="{gx + w}" y2="{gy + h}" '
@@ -184,25 +193,26 @@ def small_multiples(repos: list[dict], mode: str) -> str:
                 for j, (d, rate, _) in enumerate(pts)
             )
             out.append(
-                f'<path d="{path}" fill="none" stroke="{color}" stroke-width="2" '
+                f'<path d="{path}" fill="none" stroke="{color}" stroke-width="{2 * fs}" '
                 f'stroke-linecap="round" stroke-linejoin="round"/>'
             )
             ex = gx + x_scale(pts[-1][0], w)
             ey = gy + sy(pts[-1][1] * 100, h)
             out.append(
-                f'<circle cx="{ex:.1f}" cy="{ey:.1f}" r="6" fill="{m["surface"]}"/>'
-                f'<circle cx="{ex:.1f}" cy="{ey:.1f}" r="4" fill="{color}"/>'
+                f'<circle cx="{ex:.1f}" cy="{ey:.1f}" r="{6 * fs}" fill="{m["surface"]}"/>'
+                f'<circle cx="{ex:.1f}" cy="{ey:.1f}" r="{4 * fs}" fill="{color}"/>'
             )
 
-    footer_y = height - (21 if footnote else 8)
+    footer_y = height - (21 * fs if footnote else 8)
     out.append(
-        f'<text x="{pad_x + 2}" y="{footer_y}" font-size="9.5" fill="{m["muted"]}">'
+        f'<text x="{pad_x + 2}" y="{footer_y:.0f}" font-size="{9.5 * fs}" fill="{m["muted"]}">'
         f'% of merged lines still attributed to their commit N days later (git blame -w, '
         f'histogram diff) · x-axis √days · within-repo comparison only</text>'
     )
     if footnote:
         out.append(
-            f'<text x="{pad_x + 2}" y="{height - 8}" font-size="9.5" fill="{m["muted"]}">'
+            f'<text x="{pad_x + 2}" y="{height - 8}" font-size="{9.5 * fs}" '
+            f'fill="{m["muted"]}">'
             f'† tree-scale rewrite inside the window — blame lineage unreliable there</text>'
         )
     out.append("</svg>")
@@ -336,6 +346,11 @@ def main() -> None:
         (outdir / f"survival-curves-{mode}.svg").write_text(small_multiples(repos, mode))
         (outdir / f"survival-gap-{mode}.svg").write_text(gap_chart(repos, mode))
     (outdir / "summary-table.md").write_text(summary_table(repos) + "\n")
+    if "--social" in sys.argv:
+        # Feed-optimized variant: near-square, 3 columns, larger type.
+        (outdir / "survival-curves-social.svg").write_text(
+            small_multiples(repos, "light", cols=3, panel_w=392, panel_h=260, fs=1.9)
+        )
     print(f"charts for {len(repos)} repos → {outdir}")
 
 
